@@ -1,16 +1,31 @@
-import express from "express"
-import dotenv from "dotenv"
+/* eslint-disable no-undef */
+import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import passport from "./config/passport.js";
 
-import connectDB from "./config/db.js"
-import DestinationRouter from "./routers/DestinationRouter.js"
+
+import connectDB from "./config/db.js";
+import DestinationRouter from "./routers/DestinationRouter.js";
+import AuthRouter from "./routers/AuthRouter.js";
+import rateLimiterMiddlware from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
 const app = express();
-// eslint-disable-next-line no-undef
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5000;
 
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true
+}))
 app.use(express.json());
+app.use(express.urlencoded({ extended: true}))
+app.use(cookieParser());
+app.use(rateLimiterMiddlware);
+app.use(passport.initialize());
+app.use('/api/auth', AuthRouter);
 app.use('/api/destination', DestinationRouter);
 
 connectDB().then(() => {

@@ -1,6 +1,8 @@
 import express from 'express';
 import passport from 'passport';
-import authMiddleware from '../middleware/auth.js';
+import {authMiddleware,
+        requireAdmin
+} from '../middleware/auth.js';
 import AuthController from '../controllers/AuthController.js';
 
 const route = express.Router()
@@ -20,6 +22,8 @@ route.get('/current-user', authMiddleware, AuthController.getCurrentUser);
 route.post('/logout', AuthController.logOut);
 route.post('/verify', authMiddleware, AuthController.verifyToken);
 route.put('/profile', authMiddleware, AuthController.updateProfile);
-route.delete('/account', authMiddleware, AuthController.deleteAccount);
+route.get('/users', authMiddleware, requireAdmin, AuthController.getAllUsers);
+route.put('/users/:userId/role', authMiddleware, requireAdmin, AuthController.updateRoleUser);
+route.put('/users/:userId/deactivation', authMiddleware, requireAdmin, AuthController.deActivatedUser);
 
 export default route;

@@ -150,30 +150,103 @@ class AuthController{
         }
     }
 
-    /**
- * @desc    Delete user account
- * @route   DELETE /api/auth/account
- * @access  Private
- */
 
-    static async deleteAccount(req, res) {
+    static async updateRoleUser(req, res) {
         try {
-            await User.findByIdAndDelete(req.user._id);
+            const { userId } = req.params;
+            const { role } = req.body;
 
-            res.clearCookie('token');
+            const validRoles = ['user', 'admin'];
+            if (!validRoles.includes(role)) {
+                return res.status(400).json({success: false, message: 'Role invalid!'});
+            }
 
-            res.status(200).json({
-                success: true,
-                message: 'Account deleted successfully'
-            });        
-        }catch(error) {
-            console.error('Error deleting account', error);
-            res.status(500).json({
-                success: false,
-                message: 'internal server error'
-            });
+            const user = await findById(userId);
+
+            if (!user) {
+                return res.status(404).json({success: false, message: 'User not found!'});
+            }
+
+            //tidak boleh mengubah role sendiri
+            if (user._id.toString() === req.user._id.toString()){
+                return res.status(400).json({success: false, message: 'Cannot change your own role'});
+            }
+
+            user.role = role;
+            await user.save();
+
+            res.status(200).json({success: true, message: 'Role updated successfully', data: {
+                userId: user._id,
+                email: user.email,
+                role: user.role
+            }});
+        } catch (error) {
+            console.error('Error updating role:', error);
+            res.status(500).json({message: 'Internal server Error'});
         }
     }
+
+    static async getAllUsers(req, res) {
+        try {
+            const { page = 1, limit = 10, role, search } = req.query;
+
+            const query = {};
+
+            if (role) {
+                query.role = role;
+            }
+
+            if (search) {
+                query.$or = [
+                    {email: { $regex: search, $options: 'i'}},
+                    {'profile.name': {$regex: search, $options: 'i'}},
+                    {userName: { $regex: search, $options: 'i'}}
+                ];
+            }
+
+            const users = await find(query)
+                .select('-__v')
+                .limit(limit * 1)
+                .skip((page - 1) * limit)
+                .sort({createdAt: -1})
+
+            const count = await User.countDocuments(query);
+
+            res.status(200).json({
+                success: true, 
+                data: users,
+                currentPage: page,
+                totalPages: Math.ceil(count / limit),
+                totalUsers: count});
+        } catch(error) {
+            console.error('Error fetching users data: ', error);
+            return res.status(500).json({message: 'Internal Server Error'});
+        }
+    }
+
+    static async deActivatedUser(req, res) {
+        try {
+            const {userId} = req.params;
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({success: false,message: 'User not found!'})
+            }
+
+            if (user._id.toString() === req.user._id.toString()){
+                return res.status(400).json({success: false, message: 'Cannot deactivated your own account'})
+            }
+
+            user.isActive = false;
+            await user.save();
+
+            res.status(200).json({success: true, message: 'User deactivated successfully'});
+        } catch (error) {
+            console.error('Error deactivating users:', error);
+            res.status(500).json({message: 'Internal Server Error'});
+        }
+    }
+
 }
 
 export default AuthController;

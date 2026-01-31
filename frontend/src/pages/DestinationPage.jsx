@@ -6,10 +6,13 @@ const DestinationPage = () => {
     return (
         <>
             <Header />
-            <Title />
+            <Title 
+            spaceY="py-30"
+            title="Explore Banyuwangi"
+            desc="Turn your moments into memories"/>
         </>
 
     )
 }
 
-export default DestinationPage
+export default DestinationPage;

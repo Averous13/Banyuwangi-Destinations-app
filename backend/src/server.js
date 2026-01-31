@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import passport from "./config/passport.js";
@@ -11,10 +12,10 @@ import DestinationRouter from "./routers/DestinationRouter.js";
 import AuthRouter from "./routers/AuthRouter.js";
 import rateLimiterMiddlware from "./middleware/rateLimiter.js";
 
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
 
 app.use(cors({
     origin: process.env.CLIENT_URL,

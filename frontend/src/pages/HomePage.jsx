@@ -9,7 +9,7 @@ import heroImg from "@assets/images/pexels-ferli-3766560.webp";
 const HomePage = () => {
     return (
         <>
-            <Header />
+            <Header/>
             <Hero
                 title="DEAR SUNRISE"
                 subtitle="For you, who smiles like the sun, this story begins."

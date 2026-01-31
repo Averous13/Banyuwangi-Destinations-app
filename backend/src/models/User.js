@@ -29,8 +29,28 @@ const userSchema = new mongoose.Schema({
     },
     profile: {
         type: profileSchema
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: true
     }
+}, {
+    timestamps: true
 });
+
+userSchema.methods.isAdmin = function () {
+    return this.role === 'admin';
+}
+
 
 const User = mongoose.model("User", userSchema);
 

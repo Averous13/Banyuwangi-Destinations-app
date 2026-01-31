@@ -1,4 +1,18 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
+
+const imageSchema = new mongoose.Schema(
+    {
+        url: {
+            type: String,
+            required: true,
+        },
+        public_id: {
+            type: String,
+            required:true
+        },
+    },
+    { _id: false}
+);
 
 const destinationsSchema = new mongoose.Schema({
     name: {
@@ -15,7 +29,7 @@ const destinationsSchema = new mongoose.Schema({
         required: true
     },
     image: {
-        type: String,
+        type: imageSchema,
         required: true
     },
     location: {
@@ -26,6 +40,8 @@ const destinationsSchema = new mongoose.Schema({
     tags: [String]
  }, {timestamps: true}
 );
+
+
 
 const Destination = mongoose.model('Destination', destinationsSchema);
 

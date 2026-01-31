@@ -35,7 +35,7 @@ passport.use(
                 if(existingEmailUser) {
                     existingEmailUser.googleId = profile.id;
                     existingEmailUser.profile.avatar = profile.photos[0]?.value || '';
-                    await user.save();
+                    await existingEmailUser.save();
 
                     return done(null, existingEmailUser);
                 }
@@ -48,6 +48,8 @@ passport.use(
                     userName= `${userName}_${Date.now()}`;
                 }
 
+                const isFirstUser = await User.countDocuments();
+
                 user = await User.create({
                     googleId: profile.id,
                     email: profile.emails[0].value,
@@ -58,7 +60,9 @@ passport.use(
                         phone: '',
                         pekerjaan: '',
                         avatar: profile.photos[0]?.value || ''
-                    }
+                    },
+                    role: !isFirstUser ? 'admin' : 'user',
+                    isEmailVerified: profile.emails[0].verified
                 });
 
                 done(null, user);

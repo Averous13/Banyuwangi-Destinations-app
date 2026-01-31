@@ -1,7 +1,7 @@
 import { verifyToken } from "../utils/jwt.js";
 import User from "../models/User.js";
 
-const authMiddleware = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
     try {
         const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
@@ -34,4 +34,14 @@ const authMiddleware = async (req, res, next) => {
 
 }
 
-export default authMiddleware;
+export const requireAdmin = async (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({success: false, message: 'Authorization Denied!'});
+    }
+
+    if(req.user.role !== 'admin') {
+        return res.status(403).json({success: false, message: 'Access Denied'});
+    }
+
+    next();
+}

@@ -65,7 +65,7 @@ const DestinationFormPage = () => {
             }
         });
 
-        console.log([...formData.entries()]);
+        // console.log([...formData.entries()]);
 
 
         try {

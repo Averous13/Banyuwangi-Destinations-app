@@ -65,6 +65,13 @@ const DropdownAction: React.FC<DropdownActionProps> = ({ id, api }) => {
         <DropdownMenuContent>
           <DropdownMenuItem
             onSelect={() =>
+              navigate(`/data-destinations/article/${id}/edit`)
+            }
+          >
+              Detail
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={() =>
               navigate(`/data-destinations/${id}/update`)
             }
           >

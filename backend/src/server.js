@@ -10,6 +10,7 @@ import passport from "./config/passport.js";
 import connectDB from "./config/db.js";
 import DestinationRouter from "./routers/DestinationRouter.js";
 import AuthRouter from "./routers/AuthRouter.js";
+import ArticleRouter from "./routers/ArticleRouter.js"
 import rateLimiterMiddlware from "./middleware/rateLimiter.js";
 
 
@@ -28,6 +29,7 @@ app.use(rateLimiterMiddlware);
 app.use(passport.initialize());
 app.use('/api/auth', AuthRouter);
 app.use('/api/destination', DestinationRouter);
+app.use('/api/article', ArticleRouter);
 
 connectDB().then(() => {
     app.listen(port, () => {

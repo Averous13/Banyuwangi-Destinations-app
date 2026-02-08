@@ -336,4 +336,95 @@ html {
     .mobile-menu-enter {
         animation: fadeIn 0.3s ease-out;
     }
+
+  
+  .ProseMirror ::-moz-selection {
+    background: transparent !important;
+  }
+
+  .ProseMirror:focus {
+    border: none !important;
+    outline: none !important;
+}
+
+ /* TipTap Image Resize Handles */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Resize handles */
+.ProseMirror .image-resizer {
+  position: relative;
+  display: inline-block;
+}
+
+.ProseMirror .resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #3b82f6;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.ProseMirror .resize-handle:hover {
+  background: #2563eb;
+  transform: scale(1.2);
+}
+
+.ProseMirror .resize-handle.top-left {
+  top: -5px;
+  left: -5px;
+  cursor: nwse-resize;
+}
+
+.ProseMirror .resize-handle.top-right {
+  top: -5px;
+  right: -5px;
+  cursor: nesw-resize;
+}
+
+.ProseMirror .resize-handle.bottom-left {
+  bottom: -5px;
+  left: -5px;
+  cursor: nesw-resize;
+}
+
+.ProseMirror .resize-handle.bottom-right {
+  bottom: -5px;
+  right: -5px;
+  cursor: nwse-resize;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid #00BCD4;
+  outline-offset: 2px;
+  cursor: nwse-resize;
+}
+
+/* Resize container */
+.ProseMirror [data-type="resizableImage"] {
+  position: relative;
+  display: inline-block;
+}
+
+.ProseMirror [data-type="resizableImage"] img {
+  display: block;
+}
 }

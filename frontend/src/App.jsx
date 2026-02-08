@@ -20,6 +20,7 @@ import '@fontsource/sora/500.css'
 import '@fontsource/sora/600.css'
 import '@fontsource/sora/700.css'
 import DestinationFormPage from './pages/DestinationFormPage'
+import ArticleEditPage from './pages/ArticleEditPage'
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -76,6 +77,14 @@ function App() {
                 <DestinationUpdatePage />
               </AdminRoute>
             }/>  
+
+            <Route path='/data-destinations/article/:id/edit' 
+              element={
+                <AdminRoute>
+                  <ArticleEditPage />
+                </AdminRoute>
+              }
+            />
 
             <Route path='*' element={<Navigate to='/' replace />}/>
         </Routes>

@@ -1,3 +1,4 @@
+
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Highlight from "@tiptap/extension-highlight"
@@ -19,18 +20,21 @@ import { Undo2Icon,
   TextAlignStart,
   TextAlignCenter,
   TextAlignEnd,
-  TextAlignJustify
+  TextAlignJustify,
+  SquareDashedBottom
  } from "lucide-react"
 import { Separator } from "./ui/separator"
 import HeadingDropdown from "./toolbar/HeadingDropdown"
 import HighlightDropdown from "./toolbar/HighlightDropdown"
 import LinkDropdown from "./toolbar/LinkDropdown"
 import ImageUpload from "./toolbar/ImageUpload"
+import DivContainer from "./extension/DivContainer"
+
 
 
 
 export default function TiptapEditor({ value, onChange }) {
-
+   
   const editor = useEditor({
     extensions: [StarterKit, 
       Highlight.configure({multicolor: true}),
@@ -50,13 +54,6 @@ export default function TiptapEditor({ value, onChange }) {
       }),
       Image.configure({
         inline: true,
-        resize: {
-          enabled: true,
-          directions: ['top', 'bottom', 'left', 'right'], // can be any direction or diagonal combination
-          minWidth: 50,
-          minHeight: 50,
-          alwaysPreserveAspectRatio: true,
-        },
         HTMLAttributes: {
           class: 'rounded-lg cursor-pointer'
         },
@@ -75,9 +72,41 @@ export default function TiptapEditor({ value, onChange }) {
                 return { 'data-public-id': attributes['data-public-id']}
               },
             },
+            width: {
+              default: null,
+              parseHTML: element => element.getAttribute('width'),
+              renderHTML: attributes => {
+                if (!attributes.width) {
+                  return {}
+                }
+                return { width: attributes.width }
+              },
+            },
+            height: {
+              default: null,
+              parseHTML: element => element.getAttribute('height'),
+              renderHTML: attributes => {
+                if (!attributes.height) {
+                  return {}
+                }
+                return { height: attributes.height }
+              },
+            },
+            align: {
+              default: 'none',
+              parseHTML: element => element.getAttribute('data-align') || 'none',
+              renderHTML: attributes => {
+                if (!attributes.align || attributes.align === 'none') {
+                  return {}
+                }
+
+                return {'data-align': attributes.align}
+              },
+            },
           }
         },
-      })], 
+      }),
+      DivContainer], 
     content: value,
     onUpdate({ editor }) {
       onChange?.(editor.getHTML())
@@ -170,6 +199,16 @@ export default function TiptapEditor({ value, onChange }) {
           <Subs size={18}/>
         </Button>
 
+        <Button
+          onClick={() => editor.chain().focus().toggleDivContainer().run()}
+          variant="ghost"
+          size="sm"
+          className={editor.isActive("divContainer") ? "bg-accent" : ""}
+          title="Wrap in container"
+        >
+          <SquareDashedBottom size={18}/>
+        </Button>
+
         <ImageUpload editor={editor} />
 
         <Button
@@ -212,7 +251,7 @@ export default function TiptapEditor({ value, onChange }) {
       {/* EDITOR */}
       <EditorContent
         editor={editor}
-        className="p-3 min-h-[200px]"
+        className="tiptap-editor p-3 min-h-[200px] prose max-w-none [&_img]:max-w-full"
       />
     </div>
   )

@@ -1,5 +1,6 @@
 import Header from '../components/Header'
 import Title from '../components/Title'
+import Gallery1 from '@/components/Gallery1'
 
 
 const DestinationPage = () => {
@@ -7,9 +8,11 @@ const DestinationPage = () => {
         <>
             <Header />
             <Title 
-            spaceY="py-30"
+            spaceY="pt-30"
             title="Explore Banyuwangi"
             desc="Turn your moments into memories"/>
+            <Gallery1 />
+
         </>
 
     )

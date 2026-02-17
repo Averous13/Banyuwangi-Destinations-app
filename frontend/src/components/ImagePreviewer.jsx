@@ -1,6 +1,11 @@
 import React, {useState, useEffect } from "react";
 
-const ImagePreviewer = ({onChange, label = "Image (Required) *", error, oldImage}) => {
+const ImagePreviewer = ({onChange, 
+    label = "Image (Required) *", 
+    error, 
+    oldImage, 
+    width = "max-w-md", 
+    height = "h-64"}) => {
     const [mainPreview, setMainPreview] = useState(null);
 
     
@@ -53,7 +58,7 @@ const ImagePreviewer = ({onChange, label = "Image (Required) *", error, oldImage
                         {mainPreview ? "New Image Preview" : "Current Image:"}
                     </p>
                     <img src={previewSource} alt="Main Preview" 
-                    className="w-full max-w-md h-64 object-cover rounded-lg shadow-lg"/>
+                    className={`w-full ${width} ${height} object-cover rounded-lg shadow-lg`}/>
                 </div>
             )}
         </>

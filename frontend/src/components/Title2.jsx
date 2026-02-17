@@ -1,12 +1,10 @@
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
 
 const Title2 = ({
-    spaceY = "py-20",
+    spaceY = "pt-20",
     title,
-    link
+    children
 }) => {
-        const navigate = useNavigate()
         return (
             <section>
                 <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${spaceY} flex flex-2 justify-between`}>
@@ -17,11 +15,8 @@ const Title2 = ({
                         </h4>
                     </div>
 
-                    <Button 
-                        onClick={() => navigate(link)}
-                        className="hover:bg-accent hover:text-white">
-                        Create
-                    </Button>
+                    {children}
+
                 </div>
             </section>
         )

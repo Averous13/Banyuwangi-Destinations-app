@@ -51,6 +51,7 @@ const LinkDropdown = ({ editor }) => {
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button
+          type="button"
           variant="ghost"
           size="sm"
           className={isLinkActive ? "bg-accent" : ""}

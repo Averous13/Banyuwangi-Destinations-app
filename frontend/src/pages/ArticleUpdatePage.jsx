@@ -18,7 +18,7 @@ import articleApi from "@/api/article";
 import { useForm, Controller} from "react-hook-form";
 
 
-const ArticleEditPage = () => {
+const ArticleUpdatePage = () => {
     const {id} = useParams();
     const {
         register,
@@ -26,15 +26,16 @@ const ArticleEditPage = () => {
         handleSubmit,
         watch,
         setValue,
+        reset,
         formState: {errors},
     } = useForm({
         defaultValues: {
-            title: "",
-            content: localStorage.getItem('article-content') || "",
-            author: "",
-            status: "",
-            related: id
-        },
+            title: '',
+            content: localStorage.getItem('article-content') || '',
+            author: '',
+            status: '',
+            related: ''
+        }
         });
     const [data, setData] = useState(null);
     const [loading, setIsLoading] = useState(true);
@@ -51,13 +52,22 @@ const ArticleEditPage = () => {
         const fetchDestination = async () => {
             try {
                 const response = await destinationApi.get(`/${id}`);
+                const article = await articleApi.get(`/destination/${id}`);
                 const data = response.data;
                 setData(data);
+                reset({
+                    title: article.data.data[0].title,
+                    content: article.data.data[0].content,
+                    author: article.data.data[0].author,
+                    status: article.data.data[0].status,
+                    related: id
+                })
             } catch(error) {
                 toast.error(`Data fetching failed: ${error}`);
             } finally {
                 setIsLoading(false)
             }
+
     } 
 
     fetchDestination()
@@ -79,7 +89,7 @@ const ArticleEditPage = () => {
 
         try {
             setIsUpload(true);
-            await articleApi.post("/", formData, {
+            await articleApi.put(`/${id}`, formData, {
                 withCredentials: true,
             });
 
@@ -191,4 +201,4 @@ const ArticleEditPage = () => {
     )
 }
 
-export default ArticleEditPage
+export default ArticleUpdatePage

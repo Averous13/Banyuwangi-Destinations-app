@@ -30,6 +30,7 @@ const HeadingDropdown = ({ editor }) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
+          type="button"
           className={`
             px-2 py-1 rounded text-sm
             ${isHeadingActive ? "bg-accent" : ""}

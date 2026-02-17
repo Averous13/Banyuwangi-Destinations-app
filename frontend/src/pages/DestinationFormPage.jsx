@@ -88,10 +88,6 @@ const DestinationFormPage = () => {
         } finally {
         setLoading(false);
         }
-
-
-        
-        
     }
 
     const description = watch("description") || "";
@@ -126,7 +122,6 @@ const DestinationFormPage = () => {
                                     {errors.name.message}
                                 </p>
                             )}
-
                         </Field>
                         <Field>
                             <FieldLabel>Category</FieldLabel>
@@ -248,8 +243,6 @@ const DestinationFormPage = () => {
                 </Field>
                 </div>
             </form>
-
-
             </div>
         </section>
         </>  

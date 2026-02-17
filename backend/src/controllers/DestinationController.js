@@ -11,13 +11,7 @@ class DestinationController{
                 description,
                 loc,
             } = req.body;
-            // console.log(req.file);
-                console.log('Uploaded file info:', {
-      path: req.file.path,
-      filename: req.file.filename,
-      size: req.file.size,
-      mimetype: req.file.mimetype
-    });
+
             publicId = req.file?.filename;
             const image = {
                 url: req.file?.path,

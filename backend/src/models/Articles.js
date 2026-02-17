@@ -1,22 +1,39 @@
 import mongoose from "mongoose";
 
+const imageSchema = new mongoose.Schema(
+    {
+        url: {
+            type: String,
+            required: true,
+        },
+        public_id: {
+            type: String,
+            required:true
+        },
+    },
+    { _id: false}
+);
+
 const articleSchema =  new mongoose.Schema(
     {
         title: {
-            type: [String],
+            type: String,
             required: true,
-            maxLength: 50
+            maxLength: 60
         },
         content: {
-            type: [String],
+            type: String,
             required: true
         },
         excerpt: {
             type: String,
         },
+        hero: {
+            type: imageSchema,
+        },
         author: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            type: String,
+            required: true
         },
         status: {
             type: String,

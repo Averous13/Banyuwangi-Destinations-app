@@ -21,6 +21,10 @@ import '@fontsource/sora/600.css'
 import '@fontsource/sora/700.css'
 import DestinationFormPage from './pages/DestinationFormPage'
 import ArticleEditPage from './pages/ArticleEditPage'
+import DestinationPage from './pages/DestinationPage'
+import ArticlePage from './pages/ArticlePage'
+import ArticleUpdatePage from './pages/ArticleUpdatePage'
+import TestPage from './pages/TestPage'
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -49,6 +53,21 @@ function App() {
                 <LoginPage />
               </PublicRoute>
             }/>
+
+          <Route path='/destinations' 
+            element={
+              <ProtectedRoute>
+                <DestinationPage />
+              </ProtectedRoute>
+            }/>
+
+            <Route path='/destination/:id'
+              element={
+                <ProtectedRoute>
+                  <ArticlePage />
+                </ProtectedRoute>
+              }
+              />
 
           <Route path='/dashboard' 
             element={
@@ -85,6 +104,24 @@ function App() {
                 </AdminRoute>
               }
             />
+
+            <Route path='/data-destinations/article/:id/update' 
+              element={
+                <AdminRoute>
+                  <ArticleUpdatePage />
+                </AdminRoute>
+              }
+            />
+            <Route path='/test' 
+              element={
+                <AdminRoute>
+                  <TestPage />
+                </AdminRoute>
+              }
+            />
+
+
+
 
             <Route path='*' element={<Navigate to='/' replace />}/>
         </Routes>

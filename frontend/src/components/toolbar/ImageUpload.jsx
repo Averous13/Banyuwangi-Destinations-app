@@ -1,14 +1,41 @@
 import articleApi from "../../api/article.js";
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Button } from "../ui/button"
+import {toast} from "sonner"
 import { NodeSelection } from "@tiptap/pm/state";
 
-import { ImageIcon, Loader2, Trash2 } from "lucide-react"
+import { ImageIcon, 
+  Loader2, 
+  Trash2, 
+  ChevronDown, 
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Minimize2,
+  LayoutGrid} from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
+
+const IMAGE_SIZES = [
+  { label: "370 × 518 (Portrait)", width: 370, height: 518 },
+  { label: "270 × 270 (Square Small)", width: 270, height: 270 },
+  { label: "1170 × 526 (Wide Banner)", width: 1170, height: 526 },
+  { label: "570 × 380 (Landscape)", width: 570, height: 380 },
+  { label: "570 × 570 (Square Medium)", width: 570, height: 570 },
+  { label: "790 × 570 (Landscape Large)", width: 790, height: 570 },
+  { label: "570 × 790 (Portrait Large)", width: 570, height: 790 },
+  { label: "Auto (Original)", width: null, height: null }
+];
 
 const ImageUpload = ({editor}) => {
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isImageSelected, setIsImageSelected] = useState(false);
+  const [selectedSize, setSelectedSize] = useState(IMAGE_SIZES[7]);
 
   useEffect(() => {
     if(!editor) {
@@ -40,42 +67,41 @@ const ImageUpload = ({editor}) => {
         const formData = new FormData();
         formData.append('image', file)
 
-        const response = await articleApi.post('http://localhost:5000/api/article/upload-image', formData)
+        const response = await articleApi.post('/upload-image', formData)
         // console.log(response);
         const data = await response.data;
 
         if (data.success && data.url && editor) {
-          let defaultWidth = data.width;
-          let defaultHeight = data.height;
-
-          if (data.width > 570) {
-            const aspectRatio = data.height / data.width;
-            defaultWidth = 570;
-            defaultHeight = Math.round(570 * aspectRatio); 
-          }
-          else if (data.height > 380) {
-            const aspectRatio = data.width / data.height;
-            defaultHeight = 380;
-            defaultWidth = Math.round(380 * aspectRatio);
-          }
-          editor.chain().focus().setImage({
+          const attrs = {
             src: data.url,
             'data-public-id': data.public_id,
-            width: defaultWidth,
-            height: defaultHeight}).run();
+          };
+
+          // Set width dan height jika ada selectedSize
+          if (selectedSize.width && selectedSize.height) {
+            attrs.width = selectedSize.width;
+            attrs.height = selectedSize.height;
+          } else {
+            // Auto size - gunakan dimensi asli
+            attrs.width = data.width;
+            attrs.height = data.height;
+          }
+
+
+          editor.chain().focus().setImage(attrs).run();
         } else {
-          alert('Gagal upload gambar')
+          toast.error('Gagal upload gambar')
           }
         } catch (error) {
         console.error('Error upload gambar:', error);
-        alert('Terjadi kesalahan saat upload gambar');
+        toast.error('Terjadi kesalahan saat upload gambar');
       } finally {
         setIsUploading(false);
       }
     }
 
     event.target.value = '';
-  }, [editor]);
+  }, [editor, selectedSize]);
 
   const triggerImageUpload = useCallback(() => {
     fileInputRef.current?.click()
@@ -99,7 +125,7 @@ const ImageUpload = ({editor}) => {
 
       if (publicId) {
         try {
-          const response = await articleApi.delete('http://localhost:5000/api/article/upload-image', {
+          const response = await articleApi.delete('/upload-image', {
             data: { public_id: publicId}
           });
 
@@ -108,29 +134,66 @@ const ImageUpload = ({editor}) => {
           if (data.success) {
             console.log('Gambar berhasil dihapus')
           } else {
-            console.error('Gagal hapus')
+            toast.error('Gagal hapus')
           }
         } catch (error) {
-          console.error('Error delete', error)
+          toast.error('Error delete', error)
         }
       }
     }
   }, [editor]);
 
+  const setImageAlign = useCallback((align) => {
+    if (!editor) return;
+
+    editor.chain().focus().updateAttributes('image', {align}).run();
+  }, [editor]);
+
+  const getCurrentAlign = useCallback(() => {
+    if (!editor) return 'none';
+
+    const { state } = editor;
+    const { from } = state.selection;
+    const node = state.doc.nodeAt(from);
+
+    if (node && node.type.name === 'image') {
+      return node.attrs.align || 'none';
+    }
+    
+    return 'none';
+  }, [editor, isImageSelected]);
+
   return (
     <>
-      <Button
-        onClick={triggerImageUpload}
-        variant="ghost"
-        size="sm"
-        type="button"
-        disabled={isUploading}>
-          {isUploading ? (
-            <Loader2 size={18} className="animate-spin" />
-          ) : (
-            <ImageIcon size={18}/>
-          )}
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            disabled={isUploading}>
+              {isUploading ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <ImageIcon size={18}/>
+              )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          {IMAGE_SIZES.map((size, index) => (
+            <DropdownMenuItem
+              key={index}
+              onClick={() => {
+                setSelectedSize(size);
+                triggerImageUpload();
+              }}
+              className={selectedSize === size ? "bg-accent" : ""}>
+                {size.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
 
       <input 
         ref={fileInputRef}
@@ -141,15 +204,73 @@ const ImageUpload = ({editor}) => {
         disabled={isUploading}/>
 
       {isImageSelected && (
-        <Button
-          onClick={deleteImage}
-          variant="ghost"
-          size="sm"
-          className="text-red-500 hover:text-red-700 hover:bg-red-50"
-          title="Hapus Gambar"
-        >
-          <Trash2 size={18} />
-        </Button>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button">
+                  <LayoutGrid />
+                  <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="flex gap-2 p-2">
+              <DropdownMenuItem
+                  onClick={() => setImageAlign('left')}
+                  variant="ghost"
+                  size="sm"
+                  className={getCurrentAlign() === 'left' ? "bg-accent" : "hover:bg-accent"}
+                  title="Align Left">
+                  <AlignLeft size={18} />
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                  onClick={() => setImageAlign('center')}
+                  variant="ghost"
+                  size="sm"
+                  className={getCurrentAlign() === 'center' ? "bg-accent" : "hover:bg-accent"}
+                  title="Align Center"
+                >
+                  <AlignCenter size={18} />
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                  onClick={() => setImageAlign('right')}
+                  variant="ghost"
+                  size="sm"
+                  className={getCurrentAlign() === 'right' ? "bg-accent" : "hover:bg-accent"}
+                  title="Align Right"
+                >
+                  <AlignRight size={18} />
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                  onClick={() => setImageAlign('none')}
+                  variant="ghost"
+                  size="sm"
+                  className={getCurrentAlign() === 'none' ? "bg-accent" : "hover:bg-accent"}
+                  title="No Align (Inline)"
+                >
+                  <Minimize2 size={18} />
+              </DropdownMenuItem>
+                
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button
+            onClick={deleteImage}
+            variant="ghost"
+            size="sm"
+            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            title="Hapus Gambar"
+          >
+            <Trash2 size={18} />
+          </Button>
+        </>
+        
+
       )}
     </>
   )

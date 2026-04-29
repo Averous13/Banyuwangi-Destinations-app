@@ -27,7 +27,8 @@ class DestinationController{
                 return res.status(400).json({message: "Image is required"});
             }
             
-            const coordinate = loc.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+            const coordinate = loc.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)||
+                loc.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
             if (!coordinate) {
                 return res.status(400).json({message: "Coordinate is invalid"});
             }
@@ -37,6 +38,16 @@ class DestinationController{
                     long: parseFloat(coordinate[2]),
             };
 
+            let access = { description: "", items: []}
+            let time = { description: "", items: []}
+            
+            try {
+                if (req.body.time) time = JSON.parse(req.body.time);
+                if (req.body.access) access = JSON.parse(req.body.access);
+            } catch (error) {
+                console.error("time and access format invalid", error)
+            }
+
             const destination = new Destination({
                 name,
                 category,
@@ -44,7 +55,9 @@ class DestinationController{
                 image,
                 location,
                 contacts,
-                tags
+                tags,
+                access,
+                time
             });
 
             const savedDestination = await destination.save()
@@ -81,7 +94,6 @@ class DestinationController{
     }
 
     static async updateDestination(req, res){
-        console.log(res.body);
         let newImagepublicId = null;
         try {
             const {
@@ -114,7 +126,8 @@ class DestinationController{
             const contacts = Array.isArray(req.body.contacts) ? req.body.contacts : req.body.contacts;
             const tags = Array.isArray(req.body.tags) ? req.body.tags : [];
 
-            const coordinate = loc.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+            const coordinate = loc.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) ||
+                loc.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
             if (!coordinate) {
                 return res.status(400).json({message: "Coordinate is invalid"});
             }
@@ -123,6 +136,17 @@ class DestinationController{
                 lat: parseFloat(coordinate[1]),
                 long: parseFloat(coordinate[2])
             }
+
+            let access = { description: "", items: []}
+            let time = { description: "", items: []}
+
+            try {
+                if (req.body.time) time = JSON.parse(req.body.time);
+                if (req.body.access) access = JSON.parse(req.body.access);
+            } catch (error) {
+                console.error("time and access format invalid", error)
+            }
+
             const updatedDestination = await Destination.findByIdAndUpdate(
                 req.params.id,
                 {
@@ -132,7 +156,9 @@ class DestinationController{
                     image,
                     location,
                     contacts,
-                    tags
+                    tags,
+                    access,
+                    time
                 }, {new: true});
             if (!updatedDestination){
                 return res.status(404).json({message: "Destination not found"})

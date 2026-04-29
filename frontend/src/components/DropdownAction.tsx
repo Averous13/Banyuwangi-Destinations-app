@@ -29,10 +29,11 @@ import articleApi from "@/api/article";
 interface DropdownActionProps {
   id: number | string;
   api: AxiosInstance;
-  hasArticle: boolean;
+  onSuccess?: () => void;
+  baseLink: string;
 }
 
-const DropdownAction: React.FC<DropdownActionProps> = ({ id, api }) => {
+const DropdownAction: React.FC<DropdownActionProps> = ({ id, api, onSuccess, baseLink }) => {
   const navigate = useNavigate();  
   const [open, setOpen] = useState<boolean>(false);
 
@@ -44,6 +45,7 @@ const DropdownAction: React.FC<DropdownActionProps> = ({ id, api }) => {
     try {
       await api.delete(`/${id}`);
       toast.success("Destination deleted successfully");
+      onSuccess?.();
       setOpen(false);
     } catch (error) {
       console.error("Error deleting destination:", error);
@@ -51,16 +53,6 @@ const DropdownAction: React.FC<DropdownActionProps> = ({ id, api }) => {
     }
   };
 
-
-  const handleDetail = async () => {
-    try {
-      const article = await articleApi.get(`/destination/${id}`);
-      navigate(`/data-destinations/article/${id}/update`)
-    }catch(error) {
-      navigate(`/data-destinations/article/${id}/edit`)
-      toast.error("The Article has not been created yet");
-    }
-  }
 
   return (
     <>
@@ -76,14 +68,15 @@ const DropdownAction: React.FC<DropdownActionProps> = ({ id, api }) => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>
+
           <DropdownMenuItem
-            onSelect={handleDetail}
-          >
-              Detail
+            onSelect={() => navigate(`${baseLink}/${id}`)}>
+            Detail
           </DropdownMenuItem>
+
           <DropdownMenuItem
             onSelect={() =>
-              navigate(`/data-destinations/${id}/update`)
+              navigate(`${baseLink}/${id}/update`)
             }
           >
             Edit

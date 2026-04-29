@@ -1,128 +1,111 @@
-import React, { useEffect, useState } from "react";
+import React,{ useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { Button } from "../components/ui/button";
-import { Textarea } from "../components/ui/textarea";
+import { Button } from "../../components/ui/button";
+import {Textarea} from "../../components/ui/textarea";
 import {
-  Field,
-  FieldSet,
-  FieldGroup,
-  FieldDescription,
-  FieldLegend,
-  FieldLabel,
-} from "../components/ui/field";
-import { Input } from "../components/ui/input";
+    Field,
+    FieldSet,
+    FieldGroup,
+    FieldDescription,
+    FieldLegend,
+    FieldLabel
+} from "../../components/ui/field";
+import { Input } from "../../components/ui/input";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "../components/ui/select";
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem
+} from "../../components/ui/select";
 import { toast } from "sonner";
 
-import Header from "../components/Header";
-import InputArray from "../components/InputArray";
-import ImagePreviewer from "../components/ImagePreviewer";
-import { latLongToMapUrl } from "@/utils/latLongToMapUrl";
+import Header from "../../components/Header";
+import InputArray from "../../components/InputArray";
+import ImagePreviewer from "../../components/ImagePreviewer";
+import InputSection from "@/components/InputSection";
 
-import destinationApi from "../api/destination";
+import destinationApi from "../../api/destination";
 
+const DestinationFormPage = () => {
 
-const DestinationUpdatePage = () => {
-
-    const {id} = useParams();
+    const [ loading, setLoading ] = useState(false);
     const navigate = useNavigate();
-
-    const [loading, setLoading] = useState(false);
-    const [fetching, setFetching] = useState(true);
-    const [oldImage, setOldImage] = useState(null);
 
     const {
         register,
         control,
         handleSubmit,
         watch,
-        reset,
-        formState: { errors },
+        formState: {errors}
     } = useForm({
         defaultValues: {
-        name: "",
-        category: "",
-        tags: [],
-        contacts: [],
-        loc: "",
-        description: "",
-        image: null,
+            name: "",
+            category: "",
+            tags: [],
+            contacts: [],
+            loc: "",
+            description: "",
+            time: { description: "", items: []},
+            access: { description: "", items: []},
+            image: null,
         },
     });
 
-    useEffect(() => {
-        const fetchDestination = async () => {
-            try {
-                const res = await destinationApi.get(`/${id}`);
-                const data = res.data;
-                reset({
-                    name:data.name,
-                    category: data.category,
-                    tags: data.tags || [],
-                    contacts: data.contacts || [],
-                    loc: latLongToMapUrl(data.location.lat, data.location.long),
-                    description: data.description,
-                    image: null,
-                });
-
-                setOldImage(data.image?.url || null);
-            } catch (error) {
-                toast.error(`Failed to load destination: ${error}`);
-                navigate("/data-destination");
-            } finally {
-                setFetching(false);
-            }
-        };
-
-        fetchDestination();
-    }, [id, reset, navigate]);
 
     const submitHandler = async (data) => {
         const formData = new FormData();
-        
+
         Object.entries(data).forEach(([key, value]) => {
             if (value === null || value === undefined) return;
 
-            if (Array.isArray(value)) {
-                value.forEach((v) => formData.append(key, v));
-            } else {
-                formData.append(key, value)
-            }
-        })
+            if(key === "time" || key === "access") return;
 
+            if (Array.isArray(value)) {
+                value.forEach(v => formData.append(key, v));
+            } else {
+                formData.append(key, value);
+            }
+        });
+
+        formData.append("time", JSON.stringify(data.time))
+        formData.append("access", JSON.stringify(data.access))
+        
         console.log([...formData.entries()]);
+
+
         try {
             setLoading(true);
-            await destinationApi.put(`/${id}`, formData, {
+            await destinationApi.post("/", formData, {
                 withCredentials: true,
             });
-
-            toast.success("Destination updated successfully");
+            toast.success("Destination created successfully");
             navigate("/data-destinations");
         } catch (error) {
-            toast.error(`Failed to update destination ${error}`);
+            console.log("Error creating note:", error);
+            if (error.response.status === 429) {
+                toast.error("Slow down! You're creating note too fast", {
+                duration: 4000,
+                icon: "💀",
+            });
+        } else {
+            toast.error("Failed to create note");
+            }
         } finally {
-            setLoading(false);
+        setLoading(false);
         }
-    };
+    }
 
     const description = watch("description") || "";
     const wordCounter = description
         .trim()
         .split(/\s+/)
-        .filter(Boolean).length;
+        .filter(Boolean)
+        .length;
 
-    if (fetching) {
-        return <p className="text-center py-20">Loading...</p>;
-    }
+    
     return (
         <>
         <Header />
@@ -147,7 +130,6 @@ const DestinationUpdatePage = () => {
                                     {errors.name.message}
                                 </p>
                             )}
-
                         </Field>
                         <Field>
                             <FieldLabel>Category</FieldLabel>
@@ -167,7 +149,7 @@ const DestinationUpdatePage = () => {
                                     <SelectItem value="Pantai">Pantai</SelectItem>
                                     <SelectItem value="Alam">Alam</SelectItem>
                                     <SelectItem value="Budaya">Budaya</SelectItem>
-                                    <SelectItem value="Taman">Taman</SelectItem>
+                                    <SelectItem value="Konservasi">Konservasi</SelectItem>
                                     <SelectItem value="Buatan">Buatan</SelectItem>
                                 </SelectContent>
                                 </Select>
@@ -204,6 +186,40 @@ const DestinationUpdatePage = () => {
                     </FieldGroup>
 
                     <FieldGroup>
+                    <Field>
+                        <FieldLabel>Waktu Berwisata</FieldLabel>
+                        <Controller
+                        name="time"
+                        control={control}
+                        render={({ field }) => (
+                            <InputSection
+                            label="Waktu Berwisata"
+                            value={field.value}
+                            onChange={field.onChange}
+                            withItemLabel={true}   // ← pakai label (Musim ramai, dll)
+                            />
+                        )}
+                        />
+                    </Field>
+
+                    <Field>
+                        <FieldLabel>Cara Akses</FieldLabel>
+                        <Controller
+                        name="access"
+                        control={control}
+                        render={({ field }) => (
+                            <InputSection
+                            label="Cara Akses"
+                            value={field.value}
+                            onChange={field.onChange}
+                            withItemLabel={false}  // ← tanpa label, langsung detail
+                            />
+                        )}
+                        />
+                    </Field>
+                    </FieldGroup>
+
+                    <FieldGroup>
                         <Field>
                             <FieldLabel>
                                 Location
@@ -234,14 +250,17 @@ const DestinationUpdatePage = () => {
                             </FieldDescription> 
                         </Field>
 
+
+
                         <Field>
                             <Controller
                                 name="image"
                                 control={control}
                                 rules={{
+                                    required: "Image is required",
                                     validate: file => {
                                         if(!file) {
-                                            return true;
+                                            return "Image is required";
                                         }
 
                                         const maxSize = 2 * 1024 * 1024
@@ -253,7 +272,7 @@ const DestinationUpdatePage = () => {
                                     },
                                 }}
                                 render={({ field, fieldState }) => (
-                                    <ImagePreviewer onChange={field.onChange} error={fieldState.error?.message} oldImage={oldImage}/>
+                                    <ImagePreviewer onChange={field.onChange} error={fieldState.error?.message}/>
                                 )}
                             ></Controller>
                         </Field>
@@ -268,12 +287,10 @@ const DestinationUpdatePage = () => {
                 </Field>
                 </div>
             </form>
-
-
             </div>
         </section>
         </>  
     )
 }
 
-export default DestinationUpdatePage;
+export default DestinationFormPage;

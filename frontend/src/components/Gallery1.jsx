@@ -1,31 +1,7 @@
-import { useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent, CardTitle } from './ui/card'
-import { Badge } from './ui/badge'
-import { Button } from './ui/button'
-import destinationApi from '@/api/destination'
-import { toast } from 'sonner'
 import { Link } from 'react-router-dom'
 
-const Gallery1 = () => {
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchDestination = async () => {
-            try {
-                const response = await destinationApi.get('/');
-                console.log(response.data.destinations);
-                setData(response.data.destinations);
-            } catch(error) {
-                toast.error("Error fetching data:", error);
-            } finally{
-                setLoading(false);
-            }
-        }
-
-        fetchDestination();
-    }, [])
-
+const Gallery1 = ({data = [], loading = false}) => {
 
     if (loading) {
         return (

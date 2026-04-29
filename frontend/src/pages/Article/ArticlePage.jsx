@@ -49,7 +49,7 @@ const ArticlePage = () => {
             <Hero2 src={destination.image.url} title={data.title}/>
             <section className="min-h-screen grid place-items-center bg-muted/40">
                 <div className="w-full max-w-7xl rounded-xl border bg-background p-6 shadow-lg transition-all hover:shadow-xl">
-                    <HtmlContent className="grid grid-cols-2 gap-x-6 gap-y-16" content={data[0].content} />
+                    <HtmlContent className="grid grid-cols-2 gap-x-6 gap-y-16 justify-center align-middle" content={data[0].content} />
                 </div>
             </section>
         </>

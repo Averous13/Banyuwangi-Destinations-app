@@ -52,7 +52,7 @@ class ArticleController {
     static async createArticle(req, res) {
         let publicId = null;
         try{
-            const { title, author, status, content, related} = req.body;
+            const { title, author, status, content, related, category = null} = req.body;
             let hero = null;
             if (req.file) {
                 publicId = req.file.filename;
@@ -63,7 +63,13 @@ class ArticleController {
                 }
             }
 
+            if (!title || !author || !content) {
+                return res.status(400).json({message: "title, content, and author required"});
+            }
+
+
             const excerpt = generateExcerpt(content);
+
 
             const article = new Articles({
                 title,
@@ -72,7 +78,8 @@ class ArticleController {
                 content,
                 excerpt,
                 hero,
-                related
+                related,
+                category
             });
 
             const savedArticle = await article.save();
@@ -86,7 +93,7 @@ class ArticleController {
 
     static async getArticle(req, res) {
         try {
-            const articles = await Articles.find();
+            const articles = await Articles.find().populate('related', 'name');
             res.status(200).json({articles})
         } catch (error) {
             console.error("Error fetching article:", error);
@@ -98,12 +105,12 @@ class ArticleController {
         try {
             const article = await Articles.findById(req.params.id);
             if (!article){
-                res.status(404).json({message: "Article not found"});
+               return res.status(404).json({message: "Article not found"});
             }
-            res.status(200).json(article);
+            return res.status(200).json(article);
         } catch(error) {
             console.error("Error fetching article:", error);
-            res.status(500).json({message: "Internal Server Error"});
+            return res.status(500).json({message: "Internal Server Error"});
         }
     }
 
@@ -123,7 +130,7 @@ class ArticleController {
     static async updateRelatedArticle(req, res) {
         let publicId = null;
         try {
-            const {title, author, status, content, related} = req.body;
+            const {title, author, status, content, related, category} = req.body;
             let hero = null;
             if (req.file) {
                 publicId = req.file.filename;
@@ -145,7 +152,8 @@ class ArticleController {
                     content,
                     excerpt,
                     hero,
-                    related
+                    related,
+                    category
                 }, {new: true}
             );
             if (!updatedArticle) {
@@ -156,6 +164,74 @@ class ArticleController {
             console.error("Error updating article:", error);
             rollbackImage(publicId);
             return res.status(500).json({message: "Internal server error"})
+        }
+    }
+
+    static async updateArticle(req, res) {
+        console.log(req.file.filename);
+        let newImagePublicId = null;
+        try {
+            const { title, author, status, content, related, category} = req.body;
+
+            const article = await Articles.findById(req.params.id);
+            if (!article) {
+                return res.status(404).json({message: "Article Not Found"});
+            }
+
+            let hero = article.hero;
+
+            if (req.file) {
+                newImagePublicId = req.file?.filename;
+
+                hero = {
+                    url: req.file?.path,
+                    public_id: newImagePublicId
+                }
+
+                if(article.hero?.public_id) {
+                    await rollbackImage(article.hero.public_id)
+                }
+            }
+
+            const excerpt = generateExcerpt(content);
+
+            const updatedArticle = await Articles.findByIdAndUpdate(
+                req.params.id,
+                {
+                    title,
+                    author,
+                    status,
+                    content,
+                    excerpt,
+                    hero,
+                    related,
+                    category
+                }, {new: true}
+            )
+
+            if(!updatedArticle) {
+                return res.status(404).json({message: "Article not found"});
+            }
+            res.status(200).json({message: "destination updated successfully", data: updatedArticle})
+        } catch (error) {
+            console.error("Error fetching data", error);
+            await rollbackImage(newImagePublicId);
+            res.status(500).json({message: "Internal Server Error"});
+        }
+
+    }
+
+    static async deleteArticle(req, res) {
+        try {
+            const deletedArticle = await Articles.findByIdAndDelete(req.params.id);
+            if(!deletedArticle) {
+                return res.status(404).json({message: "article not found"})
+            }
+            await rollbackImage(deletedArticle.hero.public_id)
+            return res.status(200).json({message: "Article deleted successfully"})
+        } catch (error) {
+            console.error("Error deleting article data:", error)
+            return res.status(500).json({message: "Internal Server Error"})
         }
     }
 }

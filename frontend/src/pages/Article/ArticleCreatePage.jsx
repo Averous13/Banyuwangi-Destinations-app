@@ -1,13 +1,20 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom";
-import TiptapEditor from "../components/TipTap"
+import TiptapEditor from "../../components/TipTap"
 import { useNavigate } from "react-router-dom";
-import destinationApi from "@/api/destination";
 import {
     FieldSet,
     FieldLabel,
     Field
-} from "../components/ui/field";
+} from "../../components/ui/field";
+
+import { Select,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    SelectContent
+ } from "@/components/ui/select";
+
 import { Input } from "@/components/ui/input";
 import {toast} from "sonner"
 import Title2 from "@/components/Title2";
@@ -16,30 +23,30 @@ import ImagePreviewer from "@/components/ImagePreviewer";
 import articleApi from "@/api/article";
 
 import { useForm, Controller} from "react-hook-form";
+import destinationApi from "@/api/destination";
 
 
-const ArticleUpdatePage = () => {
-    const {id} = useParams();
+const ArticleCreatePage = () => {
     const {
         register,
         control,
         handleSubmit,
         watch,
         setValue,
-        reset,
         formState: {errors},
     } = useForm({
         defaultValues: {
-            title: '',
-            content: localStorage.getItem('article-content') || '',
-            author: '',
-            status: '',
-            related: ''
-        }
+            title: "",
+            content: localStorage.getItem('article-content') || "",
+            author: "",
+            status: "",
+            related: "",
+            hero: null
+        },
         });
-    const [data, setData] = useState(null);
-    const [loading, setIsLoading] = useState(true);
     const [isUpload, setIsUpload] = useState(false);
+    const [loading, setLoading] = useState(true)
+    const [data, setData] = useState([]);
     const contentValue = watch("content")
     const navigate = useNavigate();
 
@@ -49,29 +56,19 @@ const ArticleUpdatePage = () => {
     }, [contentValue]);
 
     useEffect(() => {
-        const fetchDestination = async () => {
+        const fetchData = async () => {
             try {
-                const response = await destinationApi.get(`/${id}`);
-                const article = await articleApi.get(`/destination/${id}`);
-                const data = response.data;
-                setData(data);
-                reset({
-                    title: article.data.data[0].title,
-                    content: article.data.data[0].content,
-                    author: article.data.data[0].author,
-                    status: article.data.data[0].status,
-                    related: id
-                })
-            } catch(error) {
-                toast.error(`Data fetching failed: ${error}`);
+                const response = await destinationApi.get('/')
+                setData(response.data.destinations);
+            } catch (error) {
+                console.error("Error fetching data:", error);
             } finally {
-                setIsLoading(false)
+                setLoading(false);
             }
+        }
 
-    } 
-
-    fetchDestination()
-    }, [id]);
+        fetchData();
+    }, [])
 
     const submitHandler = async (data) => {
         const formData = new FormData();
@@ -89,7 +86,7 @@ const ArticleUpdatePage = () => {
 
         try {
             setIsUpload(true);
-            await articleApi.put(`/${id}`, formData, {
+            await articleApi.post("/", formData, {
                 withCredentials: true,
             });
 
@@ -98,7 +95,7 @@ const ArticleUpdatePage = () => {
                 : "Article Saved as Draft";
             toast.success(successMessage);
             localStorage.removeItem('article-content');
-            navigate("/data-destinations");
+            navigate("/data-article");
         } catch (error) {
             console.log("Error creating note:", error);
             if (error.response.status === 429) {
@@ -137,7 +134,7 @@ const ArticleUpdatePage = () => {
             <section className="min-h-screen grid place-items-center bg-muted/40">
                 <div className="w-full max-w-7xl rounded-xl border bg-background p-6 shadow-lg transition-all hover:shadow-xl">
                     <form onSubmit={(e) => e.preventDefault()}>
-                    <Title2 title={`Write down about ${data.name}`} spaceY="pt-2">
+                    <Title2 title={`Write down new article`} spaceY="pt-2">
                         <div className="flex gap-2">
                             <Button type="submit" disabled={isUpload} onClick={handleDraft}>
                                 {isUpload ? "Saving....." : "Save"}
@@ -149,8 +146,7 @@ const ArticleUpdatePage = () => {
                         </div>
                     </Title2>
                     <FieldSet>
-                        <div className="grid grid-cols-4 gap-4">
-                            <Field className="col-span-3">
+                            <Field>
                                 <FieldLabel className="text-lg">
                                     Title
                                 </FieldLabel>
@@ -165,6 +161,7 @@ const ArticleUpdatePage = () => {
                                         </p>
                                     )}
                             </Field>
+                            <div className="grid grid-cols-3 gap-4">
                             <Field>
                                 <FieldLabel className="text-lg">
                                     Author
@@ -179,7 +176,89 @@ const ArticleUpdatePage = () => {
                                         </p>
                                 )}
                             </Field>
+                            <Field>
+                                <FieldLabel className="text-lg">Category</FieldLabel>
+                                <Controller
+                                name="category"
+                                control={control}
+                                rules={{ required: true }}
+                                render={({ field }) => (
+                                    <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select Article Category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="populer">Populer</SelectItem>
+                                        <SelectItem value="keluarga">Keluarga</SelectItem>
+                                        <SelectItem value="budaya">Budaya</SelectItem>
+                                        <SelectItem value="petualangan">Petualangan</SelectItem>
+                                        <SelectItem value="event">Event</SelectItem>
+                                        <SelectItem value="kuliner">Kuliner</SelectItem>
+                                    </SelectContent>
+                                    </Select>
+                                )}
+                                />
+                            </Field>
+                            <Field>
+                                <FieldLabel className="text-lg">Related</FieldLabel>
+                                <Controller
+                                name="related"
+                                control={control}
+                                rules={{ required: true }}
+                                render={({ field }) => (
+                                    <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select Article Category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">
+                                            None
+                                        </SelectItem>
+                                        {data.map((dest) => (
+                                            <SelectItem key={dest._id} value={dest._id}>
+                                                {dest.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                    </Select>
+                                )}
+                                />
+                            </Field>
+                            
                         </div>
+                                <Field>
+                                    <FieldLabel className="text-lg">
+                                        Hero Image
+                                    </FieldLabel>
+                                    <Controller
+                                        name="hero"
+                                        control={control}
+                                        rules={{
+                                            required: "Hero is required",
+                                            validate: file => {
+                                                if(!file) {
+                                                    return "Hero is required";
+                                                }
+
+                                                const maxSize = 5 * 1024 * 1024
+
+                                                return (
+                                                    file.size <= maxSize ||
+                                                    "Image size must be less than 2 MB"
+                                                );
+                                            },
+                                        }}
+                                        render={({ field, fieldState }) => (
+                                            <ImagePreviewer onChange={field.onChange} error={fieldState.error?.message}/>
+                                        )}
+                                    ></Controller>
+                                </Field>
                                 <Controller
                                     name="content"
                                     control={control}
@@ -201,4 +280,4 @@ const ArticleUpdatePage = () => {
     )
 }
 
-export default ArticleUpdatePage
+export default ArticleCreatePage

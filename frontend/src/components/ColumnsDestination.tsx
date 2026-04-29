@@ -4,9 +4,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MapPin, MoreVertical } from "lucide-react";
 import DropdownAction from "./DropdownAction";
 import destinationApi from "../api/destination";
+import { Badge } from "./ui/badge";
 
 export type Destination = {
-    id: string
+    _id: string
     name: string
     category: string
     location: {
@@ -17,7 +18,7 @@ export type Destination = {
     tags: string[]
 }
 
-export const columns: ColumnDef<Destination>[] = [
+export const createColumns =(onDeleteSuccess: (id: string) => void): ColumnDef<Destination>[] => [
     {
         accessorKey: "name",
         header: "Name",
@@ -66,9 +67,9 @@ export const columns: ColumnDef<Destination>[] = [
             return (
                 <div className="flex gap-1 flex-wrap" >
                     {tags.map(tag => (
-                        <span key={tag} className="px-2 py-1 text-xs bg-gray-200 rounded">
+                        <Badge key={tag}>
                             {tag}
-                        </span>
+                        </Badge>
                     ))}
                 </div>
             )
@@ -85,7 +86,9 @@ export const columns: ColumnDef<Destination>[] = [
                 <>
                 <DropdownAction 
                 id={data._id} 
-                api={destinationApi}/>
+                api={destinationApi}
+                onSuccess={() => onDeleteSuccess(data._id)}
+                baseLink="/data-destinations"/>
 
 
                 </>

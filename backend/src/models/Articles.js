@@ -42,8 +42,12 @@ const articleSchema =  new mongoose.Schema(
         },
         related: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Destinations"
-        },  
+            ref: "Destination"
+        },
+        category: {
+            type: String,
+            enum: ["populer", "keluarga", "budaya", "event", "kuliner", "petualangan"]
+        }  
     },
     { timestamps: true}
 );

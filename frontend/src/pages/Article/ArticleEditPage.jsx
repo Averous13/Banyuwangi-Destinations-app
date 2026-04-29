@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom";
-import TiptapEditor from "../components/TipTap"
+import TiptapEditor from "../../components/TipTap"
 import { useNavigate } from "react-router-dom";
 import destinationApi from "@/api/destination";
 import {
     FieldSet,
     FieldLabel,
     Field
-} from "../components/ui/field";
+} from "../../components/ui/field";
 import { Input } from "@/components/ui/input";
 import {toast} from "sonner"
 import Title2 from "@/components/Title2";

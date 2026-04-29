@@ -1,17 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
-import Title2 from "../components/Title2";
-import Header from "../components/Header";
+import Title2 from "../../components/Title2";
+import Header from "../../components/Header";
 
-import { DataTable } from "../components/ui/DataTable";
+import { DataTable } from "../../components/ui/DataTable";
 import { toast } from "sonner";
-import { columns } from "../components/ColumnsDestination";
-import destinationApi from "../api/destination";
+import { createColumns } from "../../components/ColumnsDestination";
+import destinationApi from "../../api/destination";
+// import { createColumn } from "@tanstack/react-table";
 
 const DestinationPanelPage = () => {
     const [destination, setDestination] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isRateLimit, setIsRateLimit] = useState(true);
+
+    const handleDeleteSuccess = (deletedId) => {
+        setDestination(prev => prev.filter(item => item._id !== deletedId));
+    }
+
+    const columns = useMemo(() => createColumns(handleDeleteSuccess), []);
+
     useEffect(() => {
         const fetchDestination = async () => {
             setIsLoading(true);

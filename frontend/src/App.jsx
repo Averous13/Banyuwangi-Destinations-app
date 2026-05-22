@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import Destination from './pages/Destination/DestinationPage'
-import LoginPage from './pages/LoginPage'
+import LoginPage from './pages/Authentication/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import DestinationPanelPage from './pages/Destination/DestinationPanelPage'
 import DestinationUpdatePage from './pages/Destination/DestinationUpdatePage'
@@ -21,7 +21,6 @@ import '@fontsource/sora/500.css'
 import '@fontsource/sora/600.css'
 import '@fontsource/sora/700.css'
 import DestinationFormPage from './pages/Destination/DestinationFormPage'
-import ArticleEditPage from './pages/Article/ArticleEditPage'
 import DestinationPage from './pages/Destination/DestinationPage'
 import ArticlePage from './pages/Article/ArticlePage'
 import ArticleUpdatePage from './pages/Article/ArticleUpdatePage'
@@ -64,14 +63,6 @@ function App() {
                 <DestinationPage />
               </ProtectedRoute>
             }/>
-
-            <Route path='/destination/:id'
-              element={
-                <ProtectedRoute>
-                  <ArticlePage />
-                </ProtectedRoute>
-              }
-              />
 
           <Route path='/dashboard' 
             element={
@@ -145,18 +136,11 @@ function App() {
                 </AdminRoute>
               }/>
               
-            <Route path='/article/edit/:id' 
+            <Route path='/article/:id' 
               element={
-                <AdminRoute>
-                  <ArticleUpdatePage />
-                </AdminRoute>
-              }/>
-
-
-
-
-
-
+                <ArticlePage />
+              }
+              />
 
             <Route path='*' element={<Navigate to='/' replace />}/>
         </Routes>

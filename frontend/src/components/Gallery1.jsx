@@ -16,7 +16,7 @@ const Gallery1 = ({data = [], loading = false}) => {
             <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-xl'>
                 <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
                     {data.map((destination) => (
-                        <Link key={destination._id} to={`/destination/${destination._id}`}>
+                        <Link key={destination._id} to={`/data-destinations/${destination._id}`}>
                         <Card key={destination._id} className="relative overflow-hidden group cursor-pointer aspect-[4/5]">
                             <CardContent className="p-0 h-full">
                                 <img 

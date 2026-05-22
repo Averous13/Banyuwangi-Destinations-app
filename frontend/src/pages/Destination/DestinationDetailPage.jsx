@@ -11,6 +11,7 @@ import { MoveDiagonal } from "lucide-react";
 import DestinationTab from "@/components/DestinationTab";
 import HtmlContent from "@/components/HtmlDisplay";
 import Carousel from "@/components/Caroussel";
+import Footer from "@/components/Footer";
 
 
 const DestinationDetailPage = () => {
@@ -84,14 +85,17 @@ const DestinationDetailPage = () => {
                     </div>
 
                     <div>
-                        <HtmlContent className="grid grid-cols-2 gap-x-6 gap-y-16 items-center" content={article[0].content} />
+                        <HtmlContent className="grid grid-cols-2 gap-x-6 gap-y-16 py-10 px-10 items-center min-h-[400px]" content={article[0].content} />
                     </div>
 
                     <div>
-                        <Carousel data={article.slice(1)} />
+                        <Carousel 
+                            data={article.slice(1)} 
+                            getLink={(article) => `/article/${article._id}`}/>
                     </div>
                 </div>
             </section>
+            <Footer />
         </>
     )
 }

@@ -29,15 +29,24 @@ import HighlightDropdown from "./toolbar/HighlightDropdown"
 import LinkDropdown from "./toolbar/LinkDropdown"
 import ImageUpload from "./toolbar/ImageUpload"
 import DivContainer from "./extension/DivContainer"
-
-
+import HardBreak from "@tiptap/extension-hard-break"
 
 
 export default function TiptapEditor({ value, onChange }) {
    
   const editor = useEditor({
-    extensions: [StarterKit, 
+    extensions: [
+      StarterKit.configure({
+        hardBreak: false,
+      }), 
       Highlight.configure({multicolor: true}),
+      HardBreak.extend({
+        addKeyboardShortcuts() {
+          return {
+            Enter: () => this.editor.commands.setHardBreak(),
+          }
+        }
+      }),
       TextAlign.configure({
         types: ['heading', 'paragraph']
       }),

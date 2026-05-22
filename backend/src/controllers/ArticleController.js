@@ -1,4 +1,5 @@
 import Articles from "../models/Articles.js";
+import Destinations from "../models/Destinations.js"
 import {rollbackImage} from "../utils/rollbackImage.js";
 import { generateExcerpt } from "../utils/generateExcerpt.js";
 
@@ -93,8 +94,50 @@ class ArticleController {
 
     static async getArticle(req, res) {
         try {
-            const articles = await Articles.find().populate('related', 'name');
-            res.status(200).json({articles})
+            const {
+                page=1,
+                limit=10,
+                category,
+                author,
+                status,
+                related,
+            } = req.query
+
+            //dinamic filter
+            const query = {}
+
+            if (category) query.category = category
+            if (author) query.author = author
+            if (status) query.status = status
+
+            if (related) {
+                const relatedDest = await Destinations.findOne({ name: related }).select('_id')
+                if (relatedDest) {
+                    query.related = relatedDest._id
+                } else {
+                    return res.status(200).json({articles: [], total: 0});
+                }
+            }
+
+            const pageNum = Math.max(1, parseInt(page))
+            const limitNum = Math.max(1, Math.min(100, parseInt(limit)))
+            const skip = (pageNum - 1) * limitNum
+
+            const [articles, total] = await Promise.all([
+                Articles.find(query)
+                    .populate('related', 'name')
+                    .skip(skip)
+                    .limit(limitNum)
+                    .sort({ createdAt: -1}),
+                Articles.countDocuments(query),
+            ])
+
+            res.status(200).json({
+                articles,
+                total,
+                page: pageNum,
+                pageCount: Math.ceil(total / limitNum)
+            })
         } catch (error) {
             console.error("Error fetching article:", error);
             res.status(500).json({message: "Internal server error"});
@@ -233,6 +276,21 @@ class ArticleController {
             console.error("Error deleting article data:", error)
             return res.status(500).json({message: "Internal Server Error"})
         }
+    }
+
+    static async getOptionFilter(req, res) {
+        const [categories, authors, destinations] = await Promise.all([
+            Articles.distinct("category"),
+            Articles.distinct("author"),
+            Destinations.find().select("name").lean(),
+        ])
+
+        res.status(200).json({ 
+            categories,
+            authors,
+            status: ["published", "draft"],
+            related: destinations.map(d => d.name),
+         })
     }
 }
 

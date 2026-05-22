@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import MitraProfileSchema from "./MitraProfile";
 
 const profileSchema = new mongoose.Schema(
     {
@@ -32,7 +35,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'admin', 'partner'],
         default: 'user'
     },
     isActive: {
@@ -42,15 +45,154 @@ const userSchema = new mongoose.Schema({
     isEmailVerified: {
         type: Boolean,
         default: true
-    }
+    },
+    MitraProfile: {
+        type: MitraProfileSchema
+    },
+    is_email_verified: { 
+        type: Boolean,
+        default: false 
+    },
+    email_verification_token: {
+        type: String, select: false
+    },
+    email_verification_expires: {
+        type: Date, select: false
+    },
+    password_reset_token: {
+        type: String, select: false,
+    },
+    password_reset_expires: {
+        type: Date, select: false
+    },
+    last_login_at: {
+        type: Date
+    },
+    last_login_ip: {
+        type: String
+    },
+    login_count: { type: Number, default: 0}
 }, {
     timestamps: true
 });
+
+// indexing
+userSchema.index({email: 1}, {unique: true});
+userSchema.index({googleId: 1}, {sparse: true});
+userSchema.index({role: 1, status: 1});
+userSchema.index({status: 1})
+
+
+// presave hooks
+userSchema.pre("save", async function(next) {
+    if (!this.isModified("password") || !this.password) return next();
+
+    this.password = await bcrypt.hash(this.password, 12);
+
+    if(!this.isNew) {
+        this.password_changed_at = new Date(Date.now() - 1000);
+    }
+
+    next();
+})
+
+// Instance Methods
+//validasi password
+userSchema.methods.isPasswordCorrect = async function (inputPassword) {
+    if (!this.password) return false;
+    return await bcrypt.compare(inputPassword, this.password);
+}
+
+//validasi perubahan password setelah jwt dibuat
+userSchema.methods.isPasswordChangeAfter = function (jwtIssuedAt) {
+    if (this.password_changed_at) {
+        const changedTimestamp = parseInt(this.password_changed_at.getTime() / 1000, 10);
+        return jwtIssuedAt < changedTimestamp
+    }
+
+    return false
+}
+
+
+//generate ulang token untuk reset password
+userSchema.methods.generatePasswordResetToken = function () {
+    const token = crypto.randomBytes(32).toString("hex");
+    this.password_reset_token = crypto.createHash("sha26")
+        .update(token)
+        .digest('hex');
+    this.password_reset_expires = new Date(Date.now() + 60 * 60 * 1000);
+    return token;
+}
+
+
+//generate token untuk verifikasi email
+userSchema.methods.generateEmailVerificationToken = function () {
+    const token = crypto.randomBytes(32).toString("hex");
+    this.email_verification_token = crypto  
+        .createHash("sha26")
+        .update(token)
+        .digest('hex');
+    this.password_reset_expires = new Date(Date.now() + 60 * 60 * 1000); // 1 jam
+  return token;
+}
+
+userSchema.methods.isPartnerVerified = function () {
+    return this.role === 'partner' && this.status === "active"
+}
 
 userSchema.methods.isAdmin = function () {
     return this.role === 'admin';
 }
 
+userSchema.methods.isPartner = function () {
+    return this.role === 'partner';
+}
+
+userSchema.methods.canLogin = function () {
+    return  ["active", "pending_verification"].includes(this.status);
+}
+
+// Static Methods
+// Buat akun sendiri atau via google
+
+userSchema.statics.findOrCreateFromGoogle = async function (googleProfile) {
+    const { id: googleId, displayName: name, emails, photos} = googleProfile;
+    const email = emails[0].value;
+    const avatar = photos?.[0]?.value;
+
+    let user = await this.findOne({ googleId});
+
+    if (!user) {
+        
+        user = await this.findOne({ email});
+        if (user) {
+            user.googleId = googleId;
+            user.auth_provider = "google";
+            if (!user.avatar) user.avatar = avatar;
+            user.is_email_verified = true;
+            await user.save()
+        } else {
+      // Buat akun baru
+            user = await this.create({
+            name,
+            email,
+            avatar,
+            googleId,
+            auth_provider: "google",
+            role: "user",       // Default user biasa
+            status: "active",   // Langsung aktif
+            is_email_verified: true, // Email sudah terverifikasi via Google
+        });
+    }
+        return user;
+    }
+}
+
+userSchema.statics.getPendingMitra = function () {
+  return this.find({ role: "mitra", status: "pending_verification" })
+    .select("name email phone mitra_profile created_at")
+    .sort("-created_at");
+};
 
 const User = mongoose.model("User", userSchema);
 

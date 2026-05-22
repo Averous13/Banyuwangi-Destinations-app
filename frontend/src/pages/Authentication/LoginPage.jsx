@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardContent, CardTitle, CardFooter, CardAction } from '../components/ui/card'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { GoogleIcon } from '../assets/GoogleIcon';
+import { Card, CardHeader, CardContent, CardTitle, CardFooter, CardAction } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { GoogleIcon } from '@/assets/GoogleIcon';
 
 const LoginPage = () => {
     const [email, setEmail ] = useState('');

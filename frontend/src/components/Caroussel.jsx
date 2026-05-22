@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Card } from "@/components/ui/card"
+import { useNavigate } from "react-router-dom"
 
 const VISIBLE_COUNT = 3
 
-const Carousel = ({ data = [] }) => {
+const Carousel = ({ data = [], getLink }) => {
   const [activeIndex, setActiveIndex] = useState(0)
 
   const maxIndex = Math.max(0, data.length - VISIBLE_COUNT)
@@ -16,7 +17,6 @@ const Carousel = ({ data = [] }) => {
 
   return (
     <div className="flex items-center gap-4 py-6">
-      {/* Prev Button */}
       <button
         onClick={handlePrev}
         disabled={activeIndex === 0}
@@ -30,14 +30,16 @@ const Carousel = ({ data = [] }) => {
         <ChevronLeft size={20} />
       </button>
 
-      {/* Cards Track */}
       <div className="flex flex-1 gap-4 overflow-hidden">
         {visibleItems.map((item, i) => (
-          <ArticleCard key={item.id ?? i} item={item} />
+          <ArticleCard
+            key={item.id ?? i}
+            item={item}
+            link={getLink ? getLink(item) : null}
+          />
         ))}
       </div>
 
-      {/* Next Button */}
       <button
         onClick={handleNext}
         disabled={activeIndex >= maxIndex}
@@ -54,27 +56,29 @@ const Carousel = ({ data = [] }) => {
   )
 }
 
-const ArticleCard = ({ item }) => {
+const ArticleCard = ({ item, link }) => {
+  const navigate = useNavigate()
   const image = item.hero?.url
 
   return (
     <Card
-      className="relative flex-1 min-w-0 overflow-hidden rounded-2xl border-0 cursor-pointer
-                 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
-      style={{ aspectRatio: "9 / 14" }}
+      onClick={() => link && navigate(link)}
+      className="relative flex-1 min-w-0 overflow-hidden rounded-2xl border-0
+                 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl select-none"
+      style={{
+        aspectRatio: "9 / 14",
+        cursor: link ? "pointer" : "default",
+      }}
     >
-      {/* Image */}
       <img
         src={image}
         alt={item.title}
         draggable={false}
-        className="absolute inset-0 w-full h-full object-cover select-none"
+        className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Gradient overlay - from-black to transparent */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
 
-      {/* Floating title at bottom */}
       <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col gap-1.5">
         {item.category && (
           <span className="self-start text-[10px] font-bold uppercase tracking-widest
@@ -89,6 +93,5 @@ const ArticleCard = ({ item }) => {
     </Card>
   )
 }
-
 
 export default Carousel

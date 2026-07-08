@@ -28,6 +28,7 @@ import ArticleCreatePage from './pages/Article/ArticleCreatePage'
 import ArticlePanelPage from './pages/Article/ArticlePanelPage'
 import InteractiveMapPage from './pages/InteractiveMapPage'
 import DestinationDetailPage from './pages/Destination/DestinationDetailPage'
+import RegisterPage from './pages/Authentication/RegisterPage'
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -54,6 +55,13 @@ function App() {
             element={
               <PublicRoute>
                 <LoginPage />
+              </PublicRoute>
+            }/>
+
+          <Route path='/register' 
+            element={
+              <PublicRoute>
+                <RegisterPage/>
               </PublicRoute>
             }/>
 
@@ -88,9 +96,9 @@ function App() {
 
           <Route path='/data-destinations/:id'
             element={
-              <AdminRoute>
+              <ProtectedRoute>
                 <DestinationDetailPage />
-              </AdminRoute>
+              </ProtectedRoute>
             }/>
 
           <Route path='/data-destinations/:id/update'

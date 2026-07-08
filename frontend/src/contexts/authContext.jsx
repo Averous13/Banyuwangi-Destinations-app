@@ -66,6 +66,20 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const register = async (formData, role = 'user') => {
+        const endpoint = role === 'mitra'
+            ? '/register/mitra'
+            : '/register/user';
+
+        const res = await authApi.post(endpoint, formData);
+
+        if (role === 'user') {
+            login(res.data.token)
+        }
+
+        return res.data;
+    }
+
     // ─── Role checkers ───────────────────────────────────────────────────────
     const isAdmin = () => user?.role === 'admin';
     const isUser  = () => user?.role === 'user';
@@ -77,6 +91,7 @@ export const AuthProvider = ({ children }) => {
             value={{
                 user,
                 loading,
+                register,
                 login,
                 logout,
                 checkAuth,

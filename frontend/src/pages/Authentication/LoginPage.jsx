@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardContent, CardTitle, CardFooter} from '@/components/ui/card'
@@ -89,7 +90,7 @@ const LoginPage = () => {
               disabled={loading}
               className="w-full h-12 bg-primary hover:bg-secondary text-background font-medium"
             >
-              {loading ? 'Masuk...' : 'Continue'}
+              {loading ? 'Masuk...' : 'Sign In'}
             </Button>
           </form>
 

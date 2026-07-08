@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardContent, CardTitle, CardFooter, CardAction } from '@/components/ui/card'
+import { Card, CardHeader, CardContent, CardTitle, CardFooter} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GoogleIcon } from '@/assets/GoogleIcon';
+import authApi from '@/api/auth';
+import { AuthContext } from '@/contexts/authContext';
 
 const LoginPage = () => {
     const [email, setEmail ] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const {login} = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(email);
+        setError('');
+        setLoading(true);
+
+        try {
+          const res = await authApi.post('/login', { email, password });
+          login(res.data.token);
+
+          navigate('/dashboard');
+        } catch (err) {
+          const message = err.response?.data?.message || 'Login gagal. Periksa email dan password Anda.';
+          setError(message);
+        } finally {
+          setLoading(false);
+        }
     }
 
 
@@ -51,12 +71,25 @@ const LoginPage = () => {
               />
             </div>
 
+            <div className="space-y-2">
+              <Input
+                type="password"
+                placeholder="Password*"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+                className="h-12 text-base"
+              />
+            </div>
+
             {/* Continue Button */}
             <Button
               type="submit"
+              disabled={loading}
               className="w-full h-12 bg-primary hover:bg-secondary text-background font-medium"
             >
-              Continue
+              {loading ? 'Masuk...' : 'Continue'}
             </Button>
           </form>
 

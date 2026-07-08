@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth20";
-import User from "../models/User.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -16,61 +15,15 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                let user = await User.findOne({ googleId: profile.id });
-
-                //jika user sudah ada, update data profile
-                if (user) {
-                    user.profile.name = profile.displayName;
-                    user.profile.avatar = profile.photos[0]?.value || '';
-                    await user.save();
-
-                    return done(null, user);
-                }
-
-                const existingEmailUser = await User.findOne({
-                    email: profile.emails[0].value
-                })
-
-                // jika email user sudah terdaftar
-                if(existingEmailUser) {
-                    existingEmailUser.googleId = profile.id;
-                    existingEmailUser.profile.avatar = profile.photos[0]?.value || '';
-                    await existingEmailUser.save();
-
-                    return done(null, existingEmailUser);
-                }
-
-                let userName = profile.emails[0].value.split('@')[0];
-
-                // jika username sudah ada, tambahkan suffix
-                const existingUserName = await User.findOne({userName});
-                if(existingUserName) {
-                    userName= `${userName}_${Date.now()}`;
-                }
-
-                const isFirstUser = await User.countDocuments();
-
-                user = await User.create({
-                    googleId: profile.id,
-                    email: profile.emails[0].value,
-                    userName: userName,
-                    profile: {
-                        name: profile.displayName,
-                        alamat: '',
-                        phone: '',
-                        pekerjaan: '',
-                        avatar: profile.photos[0]?.value || ''
-                    },
-                    role: !isFirstUser ? 'admin' : 'user',
-                    isEmailVerified: profile.emails[0].verified
-                });
-
-                done(null, user);
+                return done(null, profile);
             }catch(error) {
-                done(error, null);
+                return done(error, null);
             }
         }
     )
 );
+
+passport.serializeUser((user, done) => done(null, user))
+passport.deserializeUser((user, done) => done(null, user))
 
 export default passport;

@@ -6,7 +6,7 @@ import Title from "../Title";
 const AdminRoute = ({children}) => {
     // eslint-disable-next-line no-unused-vars
     const {user, loading, isAdmin} = useContext(AuthContext);
-
+    console.log(user);
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">

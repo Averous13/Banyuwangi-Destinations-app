@@ -4,12 +4,9 @@ const MitraProfileSchema = new mongoose.Schema({
     //data identitas
     business_name: { type: String, trim: true, required: true},
     bio: { type: String, trim: true, maxLength: [500, "Bio Maksimal 500 karakter"]},
-    owner_phone: { type: String, trim: true, minLength: [11, "No. HP invalid"], maxLength: [13, "No. HP invalid"], required: true},
-    owner_email: { type: String, trim: true, lowercase: true, required: true},
-    owner_address: {type: String, trim: true, required: true},
     //data verifikasi
     ktp_number: { type: String, trim: true, select: false, required: true},
-    ktp_image_url: { type: String, select: false},
+    ktp_image_id: { type: String, select: false},
     npwp_number: { type: String, select: false},
 
     //data pembayaran

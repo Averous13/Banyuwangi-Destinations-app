@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import MitraProfileSchema from "./MitraProfile";
+import MitraProfileSchema from "./MitraProfile.js";
+import { generateUserName } from "../utils/generateUserName.js";
 
 const profileSchema = new mongoose.Schema(
     {
@@ -30,6 +31,10 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
+    password: {
+        type: String,
+        select: false
+    },
     profile: {
         type: profileSchema
     },
@@ -38,11 +43,11 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin', 'partner'],
         default: 'user'
     },
-    isActive: {
-        type: Boolean,
-        default: true
+    status: {
+        type: String,
+        enum: ['active', 'pending', 'suspended', 'rejected', 'banned'],
     },
-    isEmailVerified: {
+    isActive: {
         type: Boolean,
         default: true
     },
@@ -77,15 +82,13 @@ const userSchema = new mongoose.Schema({
 });
 
 // indexing
-userSchema.index({email: 1}, {unique: true});
-userSchema.index({googleId: 1}, {sparse: true});
 userSchema.index({role: 1, status: 1});
 userSchema.index({status: 1})
 
 
 // presave hooks
-userSchema.pre("save", async function(next) {
-    if (!this.isModified("password") || !this.password) return next();
+userSchema.pre("save", async function() {
+    if (!this.isModified("password") || !this.password) return;
 
     this.password = await bcrypt.hash(this.password, 12);
 
@@ -93,7 +96,6 @@ userSchema.pre("save", async function(next) {
         this.password_changed_at = new Date(Date.now() - 1000);
     }
 
-    next();
 })
 
 // Instance Methods
@@ -129,10 +131,10 @@ userSchema.methods.generatePasswordResetToken = function () {
 userSchema.methods.generateEmailVerificationToken = function () {
     const token = crypto.randomBytes(32).toString("hex");
     this.email_verification_token = crypto  
-        .createHash("sha26")
+        .createHash("sha256")
         .update(token)
         .digest('hex');
-    this.password_reset_expires = new Date(Date.now() + 60 * 60 * 1000); // 1 jam
+    this.email_verification_expires = new Date(Date.now() + 60 * 60 * 1000); // 1 jam
   return token;
 }
 
@@ -149,7 +151,7 @@ userSchema.methods.isPartner = function () {
 }
 
 userSchema.methods.canLogin = function () {
-    return  ["active", "pending_verification"].includes(this.status);
+    return  ["active", "pending"].includes(this.status);
 }
 
 // Static Methods
@@ -159,6 +161,7 @@ userSchema.statics.findOrCreateFromGoogle = async function (googleProfile) {
     const { id: googleId, displayName: name, emails, photos} = googleProfile;
     const email = emails[0].value;
     const avatar = photos?.[0]?.value;
+    const userName = generateUserName(email);
 
     let user = await this.findOne({ googleId});
 
@@ -174,18 +177,21 @@ userSchema.statics.findOrCreateFromGoogle = async function (googleProfile) {
         } else {
       // Buat akun baru
             user = await this.create({
-            name,
+            userName,
             email,
-            avatar,
+            profile: {
+                name,
+                avatar,
+            },
             googleId,
             auth_provider: "google",
             role: "user",       // Default user biasa
             status: "active",   // Langsung aktif
             is_email_verified: true, // Email sudah terverifikasi via Google
-        });
+            });
+        }
     }
-        return user;
-    }
+    return user;
 }
 
 userSchema.statics.getPendingMitra = function () {

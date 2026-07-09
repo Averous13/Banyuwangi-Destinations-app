@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom";
-import TiptapEditor from "../../components/TipTap"
+import TiptapEditor from "../../components/editor/TipTap"
 import { useNavigate } from "react-router-dom";
 import destinationApi from "@/api/destination";
 import {
@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import {toast} from "sonner"
 import Title2 from "@/components/Title2";
 import { Button } from "@/components/ui/button"; 
-import ImagePreviewer from "@/components/ImagePreviewer";
+import ImagePreviewer from "@/components/editor/ImagePreviewer";
 import articleApi from "@/api/article";
 
 import { useForm, Controller} from "react-hook-form";

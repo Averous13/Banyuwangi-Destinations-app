@@ -1,11 +1,11 @@
 import React, {useState} from "react";
-import { Badge } from "./ui/badge";
-import { Input } from "./ui/input";
+import { Badge } from "../ui/badge";
+import { Input } from "../ui/input";
 import { X } from "lucide-react";
 import {
     Field,
     FieldLabel
-} from "../components/ui/field";
+} from "../ui/field";
 
 const InputArray = ( {
     label,

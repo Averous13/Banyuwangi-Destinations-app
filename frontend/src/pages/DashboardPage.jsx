@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../contexts/authContext";
-import Header from "../components/Header";
+import Header from "../components/main/Header";
 
 const DashboardPage = () => {
     const { user, logout } = useContext(AuthContext);

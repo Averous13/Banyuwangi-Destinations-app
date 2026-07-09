@@ -2,7 +2,7 @@ import { useEffect, useState,useMemo } from "react"
 
 import { createColumns } from "@/components/ColumnsArticle";
 import articleApi from "@/api/article";
-import Header from "@/components/Header";
+import Header from "@/components/main/Header";
 import Title2 from "@/components/Title2";
 import { DataTable } from "@/components/ui/DataTable";
 import FilterBar from "@/components/FilterBar";

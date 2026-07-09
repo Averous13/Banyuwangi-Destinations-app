@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
+import Header from "@/components/main/Header";
 import Hero2 from "@/components/Hero2";
 import MiniMap from "@/components/MiniMap";
 import { MoveDiagonal } from "lucide-react";
 import DestinationTab from "@/components/DestinationTab";
-import HtmlContent from "@/components/HtmlDisplay";
+import HtmlContent from "@/components/editor/HtmlDisplay";
 import Carousel from "@/components/Caroussel";
-import Footer from "@/components/Footer";
+import Footer from "@/components/main/Footer";
 
 
 const DestinationDetailPage = () => {

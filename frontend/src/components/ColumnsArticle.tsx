@@ -2,7 +2,7 @@
 
 import { ColumnDef, getFacetedMinMaxValues } from "@tanstack/react-table";
 import { Image } from "lucide-react";
-import DropdownAction from "./DropdownAction";
+import DropdownAction from "./editor/DropdownAction";
 import articleApi from "@/api/article";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";

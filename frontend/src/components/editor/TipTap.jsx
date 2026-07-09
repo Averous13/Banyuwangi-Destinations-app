@@ -8,7 +8,7 @@ import Superscript from '@tiptap/extension-superscript'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import { Selection } from '@tiptap/extensions'
-import {Button} from './ui/button'
+import {Button} from '../ui/button'
 import { Undo2Icon, 
   Redo2Icon, 
   BoldIcon, 
@@ -23,12 +23,12 @@ import { Undo2Icon,
   TextAlignJustify,
   SquareDashedBottom
  } from "lucide-react"
-import { Separator } from "./ui/separator"
-import HeadingDropdown from "./toolbar/HeadingDropdown"
-import HighlightDropdown from "./toolbar/HighlightDropdown"
-import LinkDropdown from "./toolbar/LinkDropdown"
-import ImageUpload from "./toolbar/ImageUpload"
-import DivContainer from "./extension/DivContainer"
+import { Separator } from "../ui/separator"
+import HeadingDropdown from "../toolbar/HeadingDropdown"
+import HighlightDropdown from "../toolbar/HighlightDropdown"
+import LinkDropdown from "../toolbar/LinkDropdown"
+import ImageUpload from "../toolbar/ImageUpload"
+import DivContainer from "../extension/DivContainer"
 import HardBreak from "@tiptap/extension-hard-break"
 
 

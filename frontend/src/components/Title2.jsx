@@ -7,7 +7,7 @@ const Title2 = ({
 }) => {
         return (
             <section>
-                <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${spaceY} flex flex-2 justify-between`}>
+                <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${spaceY} flex flex-2 justify-between`}>
                     {/* Header */}
                     <div className="text-left mb-12">
                         <h4 className="text-4xl md:text-5xl font-bold mb-4">

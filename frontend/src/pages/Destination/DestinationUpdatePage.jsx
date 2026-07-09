@@ -22,10 +22,10 @@ import {
 } from "../../components/ui/select";
 import { toast } from "sonner";
 
-import Header from "../../components/Header";
-import InputArray from "../../components/InputArray";
-import ImagePreviewer from "../../components/ImagePreviewer";
-import InputSection from "@/components/InputSection";
+import Header from "../../components/main/Header";
+import InputArray from "../../components/editor/InputArray";
+import ImagePreviewer from "../../components/editor/ImagePreviewer";
+import InputSection from "@/components/editor/InputSection";
 import { latLongToMapUrl } from "@/utils/latLongToMapUrl";
 
 import destinationApi from "../../api/destination";

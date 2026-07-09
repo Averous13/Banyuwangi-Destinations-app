@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 
 import Title2 from "../../components/Title2";
-import Header from "../../components/Header";
+import Header from "../../components/main/Header";
 
 import { DataTable } from "../../components/ui/DataTable";
 import { toast } from "sonner";

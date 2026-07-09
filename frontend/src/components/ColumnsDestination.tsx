@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { MapPin, MoreVertical } from "lucide-react";
-import DropdownAction from "./DropdownAction";
+import DropdownAction from "./editor/DropdownAction";
 import destinationApi from "../api/destination";
 import { Badge } from "./ui/badge";
 

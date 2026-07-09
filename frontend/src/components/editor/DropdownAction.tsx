@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 
 import {
   AlertDialog,
@@ -17,7 +17,7 @@ import {
   AlertDialogCancel,
   AlertDialogFooter,
   AlertDialogAction,
-} from "./ui/alert-dialog";
+} from "../ui/alert-dialog";
 
 import { toast } from "sonner";
 import type { AxiosInstance } from "axios";

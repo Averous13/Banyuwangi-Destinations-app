@@ -1,6 +1,6 @@
 import { useState, useEffect} from 'react'
 import {toast} from 'sonner'
-import Header from '../../components/Header'
+import Header from '../../components/main/Header'
 import Title from '../../components/Title'
 import Gallery1 from '@/components/Gallery1'
 import destinationApi from '@/api/destination'

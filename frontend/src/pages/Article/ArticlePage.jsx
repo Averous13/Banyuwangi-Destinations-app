@@ -1,8 +1,8 @@
 import articleApi from "@/api/article";
-import Header from "@/components/Header";
+import Header from "@/components/main/Header";
 import Hero2 from "@/components/Hero2";
-import HtmlContent from "@/components/HtmlDisplay";
-import Footer from "@/components/Footer";
+import HtmlContent from "@/components/editor/HtmlDisplay";
+import Footer from "@/components/main/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CalendarDays, User } from "lucide-react";

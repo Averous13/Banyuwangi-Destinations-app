@@ -5,30 +5,27 @@ import { Button } from './ui/button';
 
 
 const truncate = (str = '', max=60) => {
-    str.length > max ? str.slice(0, max).trimEnd() + '...' : str;
+    return str.length > max ? str.slice(0, max).trimEnd() + '...' : str;
 }
 
 const SkeletonCard = () => (
-    <div className='relative flex-shrink-0 w-56 md:w-64 h-80 md:h-96 rounded-2xl overflow-hidden bg-gray-200 animate-pulse'></div>
+    <div className='relative shrink-0 w-56 md:w-64 h-80 md:h-96 rounded-2xl overflow-hidden bg-gray-200 animate-pulse'></div>
 )
 
 const DestinationCard = ({ destination, onClick}) => {
     const {
         name,
-        slug,
-        images = [],
-        // description = '',
-        // location = {},
-        // tags = [],
+        image,
     } =destination;
 
-    const imageUrl = images?.url || '/placeholder.jpg';
+    const imageUrl = image?.url || '/placeholder.jpg';
+
     
     return (
         <Button
             type='button'
-            onClick={() => onClick?.(slug || destination._id)}
-            className='relative flex-shrink-0 w-56 md:2-64 h-80 md:h-96 rounded-2xl overflow-hidden cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2'
+            onClick={() => onClick?.(destination._id)}
+            className='relative gap-10 shrink-0 w-64 md:w-[340px] h-96 md:h-[520px] rounded-2xl md:rounded-[28px] overflow-hidden cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2'
             aria-label={`Lihat destinasi ${name}`}>
 
             <img src={imageUrl} alt={name}  
@@ -36,12 +33,12 @@ const DestinationCard = ({ destination, onClick}) => {
                 loading="lazy"/>
 
             {/* overlat gradient */}
-            <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent'/>
+            <div className='absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent'/>
 
             <div className='absolute bottom-0 left-0 right-0 p-4 text-left'>
-                <h3 className='text-white text-lg md:text-xl font-semibold leading-tight'>
+                <h4 className='text-white text-lg md:text-xl font-semibold leading-tight'>
                     {truncate(name, 40)}
-                </h3>
+                </h4>
             </div>
             
         </Button>
@@ -59,14 +56,14 @@ const DestinationCarousel = ({
     const [canPrev, setCanPrev] = useState(false);
     const [canNext, setCanNext] = useState(true);
 
-    const SCROLL_BY = 280;
+    const SCROLL_BY = 360;
 
     const updateButtons = useCallback(() => {
         const el = trackRef.current;
         if (!el) return;
         setCanPrev(el.scrollLeft > 8);
         setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 8);
-    })
+    }, [])
 
     useEffect(() => {
         const el = trackRef.current;
@@ -93,14 +90,14 @@ const DestinationCarousel = ({
                 </h2>
 
                 {!loading && !error && destinations.length > 0 && (
-                    <div className='flex items-center gap-2 flex-shrink-0'>
+                    <div className='flex items-center gap-2 shrink-0'>
                         <Button
                             type="button"
                             onClick={() => scrollTo('prev')}
                             disabled={!canPrev}
                             aria-label='Sebelumnya'
                             className='w-9 h-9 rounded-full border border-border flex items-center
-                            justify-center bg-background hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
+                            justify-center bg-primary hover:bg-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
                                 <ChevronLeft className='w-4 h-4'/>
                         </Button>
 
@@ -110,7 +107,7 @@ const DestinationCarousel = ({
                             disabled={!canNext}
                             aria-label='Sebelumnya'
                             className='w-9 h-9 rounded-full border border-border flex items-center
-                            justify-center bg-background hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
+                            justify-center bg-primary hover:bg-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
                                 <ChevronRight className='w-4 h-4'/>
                         </Button>
                     </div>
@@ -136,7 +133,7 @@ const DestinationCarousel = ({
                 <div
                     ref={trackRef}
                     className="
-                        flex gap-3 md:gap-4
+                        flex gap-10 md:gap-6
                         overflow-x-auto scroll-smooth
                         px-6 md:px-10 lg:px-16
                         pb-2
@@ -153,12 +150,11 @@ const DestinationCarousel = ({
                             <SkeletonCard key={i} />
                         ))
                         : destinations.map((dest) => (
-                            <div key={dest._id || dest.slug} role="listitem">
                                 <DestinationCard
                                     destination={dest}
                                     onClick={onCardClick}
                                 />
-                            </div>
+
                         ))
                     }
                 </div>

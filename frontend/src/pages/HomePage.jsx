@@ -71,12 +71,13 @@ const HomePage = () => {
 
                 <MainGallery />
 
+
                 <DestinationCarousel
                     destinations={destination}
                     loading={loading}
                     error={error}
                     title="Jelajahi Banyuwangi"
-                    onCardClick={(destination) => navigate(`/data-destinations/${destination._id}`)}
+                    onCardClick={(id) => navigate(`/data-destinations/${id}`)}
                  />
                 
 

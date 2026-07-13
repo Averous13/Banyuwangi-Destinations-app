@@ -41,6 +41,7 @@ const RegisterPage = () => {
             await register(formData, 'user');
             navigate('/')
         } catch (err) {
+            console.log(err.response.data)
             const message = err.response?.data?.message || 'registrasi gagal, Coba lagi!';
             setError(message);
         } finally {

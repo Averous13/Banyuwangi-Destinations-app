@@ -88,7 +88,7 @@ const LoginPage = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-primary hover:bg-secondary text-background font-medium"
+              className="w-full h-12 bg-primary hover:bg-accent text-background font-medium"
             >
               {loading ? 'Masuk...' : 'Sign In'}
             </Button>
@@ -105,7 +105,7 @@ const LoginPage = () => {
           </div>
 
           {/* Google Sign In Button */}
-          <Button
+            <Button
             type="button"
             variant="outline"
             onClick={handleGoogleLogin}
@@ -113,6 +113,14 @@ const LoginPage = () => {
           >
             <GoogleIcon />
             Continue with Google
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate('/register')}
+            className="w-full h-12 border-gray-300 hover:bg-primary"
+          >
+            Sign Up
           </Button>
         </CardContent>
 

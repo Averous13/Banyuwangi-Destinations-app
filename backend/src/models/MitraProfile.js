@@ -1,12 +1,26 @@
 import mongoose from "mongoose"
 
+const imageSchema = new mongoose.Schema(
+    {
+        url: {
+            type: String,
+            required: true,
+        },
+        public_id: {
+            type: String,
+            required:true
+        },
+    },
+    { _id: false}
+);
+
 const MitraProfileSchema = new mongoose.Schema({
     //data identitas
     business_name: { type: String, trim: true, required: true},
     bio: { type: String, trim: true, maxLength: [500, "Bio Maksimal 500 karakter"]},
     //data verifikasi
     ktp_number: { type: String, trim: true, select: false, required: true},
-    ktp_image_id: { type: String, select: false},
+    ktp_image: imageSchema, 
     npwp_number: { type: String, select: false},
 
     //data pembayaran

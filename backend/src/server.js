@@ -12,6 +12,7 @@ import DestinationRouter from "./routers/DestinationRouter.js";
 import AuthRouter from "./routers/AuthRouter.js";
 import ArticleRouter from "./routers/ArticleRouter.js"
 import rateLimiterMiddlware from "./middleware/rateLimiter.js";
+import { globalErrorHandler } from "./utils/catchAsync.js";
 
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(passport.initialize());
 app.use('/api/auth', AuthRouter);
 app.use('/api/destination', DestinationRouter);
 app.use('/api/article', ArticleRouter);
+app.use(globalErrorHandler)
 
 connectDB().then(() => {
     app.listen(port, () => {

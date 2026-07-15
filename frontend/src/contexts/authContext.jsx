@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import authApi from '../api/auth';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -73,6 +74,7 @@ export const AuthProvider = ({ children }) => {
 
         const res = await authApi.post(endpoint, formData);
 
+        console.log(res);
         if (role === 'user') {
             login(res.data.token)
         }
@@ -83,7 +85,7 @@ export const AuthProvider = ({ children }) => {
     // ─── Role checkers ───────────────────────────────────────────────────────
     const isAdmin = () => user?.role === 'admin';
     const isUser  = () => user?.role === 'user';
-    const isMitra = () => user?.role === 'partner'; // FIX BUG 4: tambah isMitra
+    const isMitra = () => user?.role === 'mitra'; // FIX BUG 4: tambah isMitra
 
     // ─── Provider ────────────────────────────────────────────────────────────
     return (

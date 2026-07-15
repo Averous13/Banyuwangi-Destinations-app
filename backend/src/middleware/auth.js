@@ -31,7 +31,7 @@ export const restrictTo = (...roles) => {
 
 //untuk proses verifikasi mitra
 export const requireVerifiedMitra = (req, res, next) => {
-    if (req.user.role !== "partner") {
+    if (req.user.role !== "mitra") {
         return next(new appError(
             "Anda tidak memiliki akses pada halaman ini", 403
         ));

@@ -29,6 +29,7 @@ import ArticlePanelPage from './pages/Article/ArticlePanelPage'
 import InteractiveMapPage from './pages/InteractiveMapPage'
 import DestinationDetailPage from './pages/Destination/DestinationDetailPage'
 import RegisterPage from './pages/Authentication/RegisterPage'
+import JoinMitraPage from './pages/Authentication/JoinMitraPage'
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -62,6 +63,13 @@ function App() {
             element={
               <PublicRoute>
                 <RegisterPage/>
+              </PublicRoute>
+            }/>
+
+          <Route path='/register/mitra' 
+            element={
+              <PublicRoute>
+                <JoinMitraPage/>
               </PublicRoute>
             }/>
 

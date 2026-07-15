@@ -64,7 +64,7 @@ const AuthService = {
 
     async registerMitra(data) {
         const {
-            name, email, password, phone, address,
+            name, email, password, phone, alamat,
             //Data bisnis wajib
             business_name, ktp_number,npwp_number ,bank_name, bank_account_number, bank_account_holder,
             bio
@@ -93,11 +93,12 @@ const AuthService = {
             profile: {
                 name,
                 phone,
+                alamat
             },
             auth_provider: "local",
             is_email_verified: false,
             isActive: true,
-            role: "partner",
+            role: "mitra",
             mitra_profile: {
                 business_name,
                 ktp_number,

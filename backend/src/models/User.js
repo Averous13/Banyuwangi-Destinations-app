@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    MitraProfile: {
+    mitraProfile: {
         type: MitraProfileSchema
     },
     is_email_verified: { 
@@ -139,7 +139,7 @@ userSchema.methods.generateEmailVerificationToken = function () {
 }
 
 userSchema.methods.isPartnerVerified = function () {
-    return this.role === 'partner' && this.status === "active"
+    return this.role === 'mitra' && this.status === "active"
 }
 
 userSchema.methods.isAdmin = function () {
@@ -147,7 +147,7 @@ userSchema.methods.isAdmin = function () {
 }
 
 userSchema.methods.isPartner = function () {
-    return this.role === 'partner';
+    return this.role === 'mitra';
 }
 
 userSchema.methods.canLogin = function () {

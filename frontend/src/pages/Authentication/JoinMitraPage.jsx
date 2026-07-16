@@ -15,17 +15,7 @@ import {
 
 const STEPS = [
     { id: 1, label: 'Data Pribadi',  icon: User },
-    { id: 2, label: 'Data Mitra',    icon: Briefcase },
-    { id: 3, label: 'Data Properti', icon: Home },
-];
-
-const BUSINESS_TYPES = [
-    { value: 'penginapan',   label: 'Penginapan' },
-    { value: 'tour_guide',   label: 'Tour Guide' },
-    { value: 'restoran',     label: 'Restoran / Kuliner' },
-    { value: 'oleh_oleh',    label: 'Toko Oleh-oleh' },
-    { value: 'transportasi', label: 'Transportasi' },
-    { value: 'lainnya',      label: 'Lainnya' },
+    { id: 2, label: 'Data Mitra',    icon: Briefcase }
 ];
 
 const BANK_TYPES = [
@@ -38,6 +28,15 @@ const BANK_TYPES = [
     { value: 'Danamon',        label: 'Danamon' },
     { value: 'Prima',        label: 'Prima' },
     { value: 'CIMB Niaga',        label: 'CIMB Niaga' },
+];
+
+const BUSINESS_TYPES = [
+    { value: 'penginapan',   label: 'Penginapan' },
+    { value: 'tour_guide',   label: 'Tour Guide' },
+    { value: 'restoran',     label: 'Restoran / Kuliner' },
+    { value: 'oleh_oleh',    label: 'Toko Oleh-oleh' },
+    { value: 'transportasi', label: 'Transportasi' },
+    { value: 'lainnya',      label: 'Lainnya' },
 ];
 
 const StepIndicator = ({ current }) => (
@@ -80,9 +79,10 @@ const Section1 = ({ data, onChange, error }) => (
         {error && (<div className='text-sm tex-red-600 bg-red-50 border border-red-200 rounded-md px-4 py-3'>{error} </div>)}
         <Input name="name" type='text' placeholder='Nama lengkap' value={data.name} onChange={onChange} className='h-12' required/>
         <Input name="email" type='email' placeholder='Email*' value={data.email} onChange={onChange} className='h-12' required/>
+        <Input name="alamat" type='text' placeholder='Alamat*' value={data.alamat} onChange={onChange} className='h-12' required/>
         <Input name="phone" type='tel' placeholder='Nomor HP/ WhatsApp*' value={data.phone} onChange={onChange} className='h-12' required/>
         <Input name="password" type='password' placeholder='Password* (min. 8 karakter)' value={data.password} onChange={onChange} className='h-12' required minLength={8}/>
-        <Input name="confirmPassword" type='confirmPassword' placeholder='confirmPassword* (min. 8 karakter)' value={data.confirmPassword} onChange={onChange} className='h-12' required minLength={8}/>
+        <Input name="confirmPassword" type='password' placeholder='confirmPassword* (min. 8 karakter)' value={data.confirmPassword} onChange={onChange} className='h-12' required minLength={8}/>
     </div>
 )
 
@@ -93,72 +93,56 @@ const Section2 = ({ data, onChange, error }) => (
         </p>
         {error && (<div className='text-sm tex-red-600 bg-red-50 border border-red-200 rounded-md px-4 py-3'>{error} </div>)}
         <Input name="business_name" type='text' placeholder='Nama usaha' value={data.business_name} onChange={onChange} className='h-12' required/>
-        <Select name="business_type" value={data.business_type} onChange={onChange} required>
-            <SelectTrigger>
-                <SelectValue placeholder="Pilih tipe usaha" />
-            </SelectTrigger>
-            <SelectContent>
-                {BUSINESS_TYPES.map(bt => (
-                    <SelectItem value={bt.value} key={bt.value}>
-                        {bt.label}
-                    </SelectItem>))}
-            </SelectContent>
-        </Select>
-        <Input name="ktp_number" type='number' placeholder='Nomor KTP(NIK)*' value={data.ktp_number} onChange={onChange} className='h-12' required minLength={16}/>
-        <Input name="npwp_number" type='number' placeholder='NPWP*' value={data.npwp_number} onChange={onChange} className='h-12' required minLength={15}/>
-        <Select name="bank_name" value={data.bank_name} onChange={onChange} required>
-            <SelectTrigger>
-                <SelectValue placeholder="Pilih Bank" />
-            </SelectTrigger>
-            <SelectContent>
-                {BANK_TYPES.map(bank => (
-                    <SelectItem value={bank.value} key={bank.value}>
-                        {bank.label}
-                    </SelectItem>))}
-            </SelectContent>
-        </Select>
-        <Input name="bank_account_number" type='number' placeholder='No rekening' value={data.bank_account_number} onChange={onChange} className='h-12' required minLength={8}/>
+        
+        <Input name="ktp_number" type='text' placeholder='Nomor KTP(NIK)*' value={data.ktp_number} onChange={onChange} className='h-12' required minLength={16}/>
+        <Input name="npwp_number" type='text' placeholder='NPWP*' value={data.npwp_number} onChange={onChange} className='h-12' required minLength={15}/>
+        
+        <div className='grid grid-cols-2 gap-2'>
+            <Select name="business_type" value={data.business_type} required
+                    onValueChange={(value) =>
+                        onChange({
+                            target: {
+                                name: "business_type",
+                                value,
+                            },
+                        })
+                    }>
+                
+                <SelectTrigger className='w-full'>
+                    <SelectValue placeholder="Pilih tipe usaha" />
+                </SelectTrigger>
+                <SelectContent>
+                    {BUSINESS_TYPES.map(bt => (
+                        <SelectItem value={bt.value} key={bt.value}>
+                            {bt.label}
+                        </SelectItem>))}
+                </SelectContent>
+            </Select>
+            <Select name="bank_name" value={data.bank_name}  required
+                    onValueChange={(value) =>
+                        onChange({
+                            target: {
+                                name: "bank_name",
+                                value,
+                            },
+                        })
+                    }>
+                <SelectTrigger className='w-full'>
+                    <SelectValue placeholder="Pilih Bank" />
+                </SelectTrigger>
+                <SelectContent>
+                    {BANK_TYPES.map(bank => (
+                        <SelectItem value={bank.value} key={bank.value}>
+                            {bank.label}
+                        </SelectItem>))}
+                </SelectContent>
+            </Select>
+        </div>
+        <Input name="bank_account_number" type='text' placeholder='No rekening' value={data.bank_account_number} onChange={onChange} className='h-12' required minLength={8}/>
         <Input name="bank_account_holder" type='text' placeholder='Nama rekening' value={data.bank_account_holder} onChange={onChange} className='h-12' required/>
     </div>
 )
 
-const Section3 = ({ data, onChange, error }) => (
-    <div className='space-y-4'>
-        <p className='text-sm text-muted-foreground mb-2'>
-            Daftarkan satu properti pertama Anda. Properti lain bisa ditambahkan setelah akun aktif
-        </p>
-        {error && (<div className='text-sm tex-red-600 bg-red-50 border border-red-200 rounded-md px-4 py-3'>{error} </div>)}
-        <Input name="name" type='text' placeholder='Nama properti*' value={data.name} onChange={onChange} className='h-12' required/>
-        <Select name="type" value={data.type} onChange={onChange} required>
-            <SelectTrigger>
-                <SelectValue placeholder="Pilih tipe usaha" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="" key="none">Tipe usaha*</SelectItem>
-                {BUSINESS_TYPES.map(bt => (
-                    <SelectItem value={bt.value} key={bt.value}>
-                        {bt.label}
-                    </SelectItem>))}
-            </SelectContent>
-        </Select>
-        <Input name="ktp_number" type='number' placeholder='Nomor KTP(NIK)*' value={data.ktp_number} onChange={onChange} className='h-12' required minLength={16}/>
-        <Input name="npwp_number" type='number' placeholder='NPWP*' value={data.npwp_number} onChange={onChange} className='h-12' required minLength={15}/>
-        <Select name="bank_name" value={data.bank_name} onChange={onChange} required>
-            <SelectTrigger>
-                <SelectValue placeholder="Pilih Bank" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="" key="none">Nama Bank*</SelectItem>
-                {BANK_TYPES.map(bank => (
-                    <SelectItem value={bank.value} key={bank.value}>
-                        {bank.label}
-                    </SelectItem>))}
-            </SelectContent>
-        </Select>
-        <Input name="bank_account_number" type='number' placeholder='No rekening' value={data.bank_account_number} onChange={onChange} className='h-12' required minLength={8}/>
-        <Input name="bank_account_holder" type='text' placeholder='Nama rekening' value={data.bank_account_holder} onChange={onChange} className='h-12' required/>
-    </div>
-)
 
 const validateStep = (step, data) => {
     if (step === 1){
@@ -189,8 +173,6 @@ const JoinMitraPage = () => {
         name: '', email: '', phone: '', password: '', confirmPassword: '',
         business_name: '', business_type: '', owner_address: '', owner_district: '',
         bio: '', bank_name: '', bank_account_number: '', bank_account_holder: '',
-        property_name: '', property_type: '', property_address: '', property_district: '',
-        property_phone: '', property_whatsapp: '', property_description: '',
     });
 
     const {register} = useContext(AuthContext);
@@ -230,7 +212,7 @@ const JoinMitraPage = () => {
         }
     }
 
-    const sectionTitles = ['Data Pribadi', 'Data Mitra', 'Data Properti'];
+    const sectionTitles = ['Data Pribadi', 'Data Mitra'];
 
     return (
         <div className='min-h-screen flex items-center justify-center bg-primary p-4 py-10'>
@@ -258,7 +240,6 @@ const JoinMitraPage = () => {
                                 <div key={step} className='animate-in fade-in slide-in-from-right-4 duration-300'>
                                     {step === 1 && <Section1 data={formData} onChange={handleChange} error={stepError}/>}
                                     {step === 2 && <Section2 data={formData} onChange={handleChange} error={stepError}/>}
-                                    {step === 3 && <Section3 data={formData} onChange={handleChange} error={stepError}/>}
                                 </div>
 
                                 <div className={`flex mt-6 gap-3 ${step > 1 ? 'justify-between' : 'justify-end'}`}>

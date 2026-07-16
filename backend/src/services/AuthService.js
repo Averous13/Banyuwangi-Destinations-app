@@ -23,7 +23,7 @@ function formatUserResponse(user) {
     isActive: user.isActive,
     is_email_verified: user.isEmailVerified,
     auth_provider: user.googleId ? "google" : "local",
-    mitra_profile: user.role === "mitra" ? user.MitraProfile : undefined,
+    mitraProfile: user.role === "mitra" ? user.mitraProfile : undefined,
     created_at: user.createdAt,
   };
 }
@@ -67,7 +67,6 @@ const AuthService = {
             name, email, password, phone, alamat,
             //Data bisnis wajib
             business_name, ktp_number,npwp_number ,bank_name, bank_account_number, bank_account_holder,
-            bio
         } = data;
 
         if (!business_name) throw new appError("Nama usaha wajib diisi", 400);
@@ -99,14 +98,13 @@ const AuthService = {
             is_email_verified: false,
             isActive: true,
             role: "mitra",
-            mitra_profile: {
+            mitraProfile: {
                 business_name,
                 ktp_number,
                 npwp_number,
                 bank_name,
                 bank_account_number,
-                bank_account_holder,
-                bio,
+                bank_account_holder
             },
         });
 
@@ -139,7 +137,7 @@ const AuthService = {
 
         user.role = "mitra";
         user.isActive = "pending";
-        user.MitraProfile = {
+        user.mitraProfile = {
             business_name,
             ktp_number,
             bank_name,

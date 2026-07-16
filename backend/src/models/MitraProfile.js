@@ -4,7 +4,7 @@ const MitraProfileSchema = new mongoose.Schema({
     //data identitas
     business_name: { type: String, trim: true, required: true},
     bio: { type: String, trim: true, maxLength: [500, "Bio Maksimal 500 karakter"]},
-    bussiness_type: {type: String, trim: true, required: true},
+    bussiness_type: {type: [String], trim: true, required: true},
     //data verifikasi
     ktp_number: { type: String, trim: true, select: false, required: true}, 
     npwp_number: { type: String, select: false},

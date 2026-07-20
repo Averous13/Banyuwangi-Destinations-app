@@ -4,7 +4,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import Destination from './pages/Destination/DestinationPage'
 import LoginPage from './pages/Authentication/LoginPage'
-import DashboardPage from './pages/DashboardPage'
+import DashboardPage from './pages/Dashboard/DashboardPage'
+import MitraPage from './pages/Dashboard/MitraPage'
 import DestinationPanelPage from './pages/Destination/DestinationPanelPage'
 import DestinationUpdatePage from './pages/Destination/DestinationUpdatePage'
 import ProtectedRoute from './components/route/ProtectedRoute'
@@ -30,6 +31,7 @@ import InteractiveMapPage from './pages/InteractiveMapPage'
 import DestinationDetailPage from './pages/Destination/DestinationDetailPage'
 import RegisterPage from './pages/Authentication/RegisterPage'
 import JoinMitraPage from './pages/Authentication/JoinMitraPage'
+import { Sidebar } from 'lucide-react'
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -51,6 +53,7 @@ function App() {
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/destination' element={<Destination />} />
+          <Route path='/flex' element={<Sidebar />}/>
           
           <Route path='/login' 
             element={
@@ -84,6 +87,13 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }/>
+
+          <Route path='/dashboard/mitra' 
+            element={
+              <ProtectedRoute>
+                <MitraPage />
               </ProtectedRoute>
             }/>
 

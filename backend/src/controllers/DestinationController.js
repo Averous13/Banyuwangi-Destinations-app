@@ -72,8 +72,35 @@ class DestinationController{
 
     static async getAllDestination(req, res){
         try {
-            const destinations = await Destination.find();
-            res.status(200).json({destinations})
+            const { 
+                page=1,
+                limit=10,
+                category,
+                tags,
+            } = req.query;
+
+            const query = {};
+
+            if (category) query.category = category;
+            if (tags) query.tags = tags;
+
+            const pageNum = Math.max(1, parseInt(page));
+            const pageLimit = Math.max(1, Math.min(parseInt(limit), 100));
+            const skip = (pageNum - 1) * pageLimit;
+
+            const [destinations, total] = await Promise.all([
+                Destination.find(query)
+                    .skip(skip)
+                    .limit(pageLimit)
+                    .sort({ name: 1})
+            ]);
+
+            res.status(200).json({
+                destinations,
+                total, 
+                page: pageNum,
+                pageCount: Math.ceil(total / pageLimit)
+            })
         } catch (error) {
             console.error("Error fetching data: ", error);
             res.status(500).json({message: "Internal server error"});
@@ -182,6 +209,23 @@ class DestinationController{
         } catch(error){
             console.error('Error deleting data:', error);
             res.status(500).json({message: "Internal Server Error"});
+        }
+    }
+
+    static async getOptionDestination(req, res){
+        try {
+            const [category, tags] = await Promise.all([
+                Destination.distinct("category"),
+                Destination.distinct("tags"),
+            ])
+
+            res.status(200).json({
+                category,
+                tags
+            });
+        } catch(error) {
+            console.error('Error getting filter option destination:', error)
+            res.status(500).json({message: "Internal Server Error"})
         }
     }
 

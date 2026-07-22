@@ -44,14 +44,14 @@ function FilterBar<T extends Record<string, string>>({
   const hasActive = Object.values(filters).some(Boolean)
 
   return (
-    <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/40 rounded-lg border">
+    <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/40 rounded-lg border-2 border-primary">
       {config.map((item) => (
         <Select
           key={String(item.key)}
           value={filters[item.key] || "__all__"}
           onValueChange={(v) => setFilter(item.key, v === "__all__" ? "" : v)}
         >
-          <SelectTrigger className={`${item.width ?? "w-[150px]"} h-9`}>
+          <SelectTrigger className={`${item.width ?? "w-[150px]"} h-9 border-primary`}>
             <SelectValue placeholder={item.placeholder} />
           </SelectTrigger>
           <SelectContent>

@@ -70,11 +70,11 @@ export function DataTable<TData, TValue>({
       {/* Slot toolbar — filter, search, dll dari parent */}
       {toolbar && <div>{toolbar}</div>}
 
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-md border-2 border-primary">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id}  className="border-primary">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
@@ -88,7 +88,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="border-primary">
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

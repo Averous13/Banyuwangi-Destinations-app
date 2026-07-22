@@ -7,12 +7,41 @@ import { DataTable } from "../../components/ui/DataTable";
 import { toast } from "sonner";
 import { createColumns } from "../../components/ColumnsDestination";
 import destinationApi from "../../api/destination";
+import FilterBar from "@/components/FilterBar";
+
 // import { createColumn } from "@tanstack/react-table";
 
 const DestinationPanelPage = () => {
     const [destination, setDestination] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isRateLimit, setIsRateLimit] = useState(true);
+    const [meta, setMeta] = useState({total: 0, pageCount:0});
+    const [options, setOptions] = useState({
+        categories: [],
+        tags: []
+    });
+
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
+    const [filters, setFilters] = useState({
+        category: "", tags: ""
+    })
+
+    const filterConfig = [
+        {
+            key: "category",
+            label: "All Category",
+            placeholder: "Category",
+            options: options.categories
+        },
+        {
+            key: "tags",
+            label: "All Tags",
+            placeholder: "Tags",
+            options: options.tags
+        },
+    ]
 
     const handleDeleteSuccess = (deletedId) => {
         setDestination(prev => prev.filter(item => item._id !== deletedId));
@@ -24,9 +53,19 @@ const DestinationPanelPage = () => {
         const fetchDestination = async () => {
             setIsLoading(true);
             try {
-                const response = await destinationApi.get('/');
+                const response = await destinationApi.get('/', {
+                    params: {
+                        page: pageIndex + 1,
+                        limit: pageSize,
+                        ...filters,   
+                    }
+                });
                 setIsRateLimit(false);
                 setDestination(response.data.destinations);
+                setMeta({
+                    total: response.data.total,
+                    pageCount: Math.ceil(response.data.total / pageSize)
+                })
             } catch (error){
                 console.error('error fetching', error);
                 if (error.response && error.response.status === 429) {
@@ -40,14 +79,65 @@ const DestinationPanelPage = () => {
         };
 
         fetchDestination();
+    }, [pageIndex, pageSize, filters]);
+
+    useEffect(() => {
+        const fetchOption = async () => {
+            setIsLoading(true);
+            try {
+                const response = await destinationApi.get("/opt");
+                const data = response.data
+                setOptions({
+                    categories: data.category,
+                    tags: data.tags
+                });
+                console.log(response.data)
+            } catch (error) {
+                console.error("fetching option destination:", error);
+                toast.error("Failed to fetch option filter");
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchOption();
     }, []);
+
+    const toolbar = (
+        <FilterBar
+            filters={filters}
+            config={filterConfig}
+            onChange={(newFilters) => {
+                setFilters(newFilters);
+                setPageIndex(0); // reset ke halaman 1 saat filter berubah
+            }}
+        />
+  );
 
     return (
         <>
             <Header />
-            <Title2 title="Destination Panel" spaceY="pt-26" />
-            <div className="container mx-auto py-5">
-                <DataTable columns={columns} data={destination} />
+            <div className="w-full flex justify-center">
+                <div className="w-full max-w-7xl px-6 py-5 rounded-lg">
+                    <Title2 title="Destination Panel" spaceY="pt-26" />
+                    <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 md:p-6">
+                        <DataTable 
+                        columns={columns} 
+                        data={destination}
+                        toolbar={toolbar}
+                        pagination={{ 
+                            pageIndex,
+                            pageSize,
+                            pageCount: meta.pageCount,
+                            totalRows: meta.total,
+                            onPageChange: setPageIndex,
+                            onPageSizeChange: (size) => {
+                                setPageSize(size),
+                                setPageIndex(0)
+                            }
+                        }}/>
+                    </div>
+                 </div>
             </div>
         </>
 

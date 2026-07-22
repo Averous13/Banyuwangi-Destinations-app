@@ -99,7 +99,7 @@ const ArticlePanelPage = () => {
                 authors: data.authors,
                 statuses: data.status,
                 relateds: data.related
-            })
+            });
         } catch (error) {
             console.error('Error fetching filter:', error)
             toast.error('Filter option error')
@@ -126,24 +126,26 @@ const ArticlePanelPage = () => {
   return (
     <>
       <Header />
-      <Title2 title="Article Panel" spaceY="pt-26" />
-      <div className="container mx-auto py-5">
-        <DataTable
-          columns={columns}
-          data={articles}
-          toolbar={toolbar}
-          pagination={{
-            pageIndex,
-            pageSize,
-            pageCount: meta.pageCount,
-            totalRows: meta.total,
-            onPageChange: setPageIndex,
-            onPageSizeChange: (size) => {
-              setPageSize(size);
-              setPageIndex(0);
-            },
-          }}
-        />
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-7xl px-6 py-5">
+          <Title2 title="Article Panel"/>
+          <DataTable
+            columns={columns}
+            data={articles}
+            toolbar={toolbar}
+            pagination={{
+              pageIndex,
+              pageSize,
+              pageCount: meta.pageCount,
+              totalRows: meta.total,
+              onPageChange: setPageIndex,
+              onPageSizeChange: (size) => {
+                setPageSize(size);
+                setPageIndex(0);
+              },
+            }}
+          />
+        </div>
       </div>
     </>
   );

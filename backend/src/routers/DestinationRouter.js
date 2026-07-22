@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.post('/', upload.single("image") ,DestinationController.createDestination);
 router.get('/', DestinationController.getAllDestination);
+router.get('/opt', DestinationController.getOptionDestination);
 router.get('/:id', DestinationController.getDestinationById);
 router.put('/:id', upload.single("image"),DestinationController.updateDestination);
 router.delete('/:id', DestinationController.deleteDestinations);
-router.get('/opt', DestinationController.getOptionDestination);
 
 export default router

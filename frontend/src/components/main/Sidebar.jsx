@@ -1,8 +1,10 @@
 import React,{ useState} from "react";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ( {groupMenu = []} ) => {
     const [activeMenu, setActiveMenu] = useState('dashboard');
+    const navigate = useNavigate()
     
     return (
 
@@ -23,7 +25,14 @@ const Sidebar = ( {groupMenu = []} ) => {
                                 const Icon    = item.icon;
                                 const isActive = activeMenu === item.id;
                                 return (
-                                    <Button key={item.id} onClick={() => setActiveMenu(item.id)}
+                                    <Button
+                                        key={item.id}
+                                        onClick={() => {
+                                            setActiveMenu(item.id);
+                                            if (item.link) {
+                                                navigate(item.link);
+                                            }
+                                        }}
                                         className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium mb-0.5 transition-all
                                             ${isActive
                                                 ? 'bg-white/12 text-white'

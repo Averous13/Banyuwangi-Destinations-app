@@ -6,6 +6,10 @@ import Header from "@/components/main/Header";
 import Title2 from "@/components/Title2";
 import { DataTable } from "@/components/ui/DataTable";
 import FilterBar from "@/components/FilterBar";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { GROUP_MENU } from "@/navigation/adminMenu";
+import Sidebar from "@/components/main/Sidebar";
 
 import { toast } from "sonner";
 
@@ -20,6 +24,7 @@ const ArticlePanelPage = () => {
     statuses: [],
     relateds: []
   })
+  const navigate = useNavigate()
 
   // State pagination & filter dikelola di page, bukan di DataTable
   const [pageIndex, setPageIndex] = useState(0);
@@ -125,28 +130,39 @@ const ArticlePanelPage = () => {
 
   return (
     <>
-      <Header />
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-7xl px-6 py-5">
-          <Title2 title="Article Panel"/>
-          <DataTable
-            columns={columns}
-            data={articles}
-            toolbar={toolbar}
-            pagination={{
-              pageIndex,
-              pageSize,
-              pageCount: meta.pageCount,
-              totalRows: meta.total,
-              onPageChange: setPageIndex,
-              onPageSizeChange: (size) => {
-                setPageSize(size);
-                setPageIndex(0);
-              },
-            }}
-          />
-        </div>
-      </div>
+		<div className="flex min-h-screen bg-muted/30">
+			<Sidebar groupMenu={GROUP_MENU} />
+
+			<main className="flex-1 flex justify-center p-6">
+				<div className="w-full max-w-7xl">
+					<Title2 title="Article Panel" spaceY="" >
+                        <Button 
+                            onClick={() => {navigate('/data-article/create')}}>
+                            Create
+                        </Button>
+                    </Title2>
+
+					<div className="mt-6 rounded-xl border bg-background shadow-lg p-6">
+						<DataTable
+							columns={columns}
+							data={articles}
+							toolbar={toolbar}
+							pagination={{
+								pageIndex,
+								pageSize,
+								pageCount: meta.pageCount,
+								totalRows: meta.total,
+								onPageChange: setPageIndex,
+								onPageSizeChange: (size) => {
+									setPageSize(size);
+									setPageIndex(0);
+								},
+							}}
+						/>
+					</div>
+				</div>
+			</main>
+		</div>
     </>
   );
 };

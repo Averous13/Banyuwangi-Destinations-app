@@ -32,9 +32,11 @@ import DestinationDetailPage from './pages/Destination/DestinationDetailPage'
 import RegisterPage from './pages/Authentication/RegisterPage'
 import JoinMitraPage from './pages/Authentication/JoinMitraPage'
 import { Sidebar } from 'lucide-react'
+import AdminPage from './pages/Dashboard/AdminPage'
+import ComingSoonPage from './pages/ComingSoonPage'
 
 function App() {
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, isAdmin } = useContext(AuthContext);
 
     if (loading) {
     return (
@@ -89,6 +91,20 @@ function App() {
                 <DashboardPage />
               </ProtectedRoute>
             }/>
+
+          <Route path='/dashboard/admin' 
+            element={
+              <AdminRoute>
+                <AdminPage />
+              </AdminRoute>
+            }/>
+
+          <Route path='/home' 
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+          }/>
 
           <Route path='/dashboard/mitra' 
             element={
@@ -157,9 +173,9 @@ function App() {
 
             <Route path='/map-destinations'
               element={
-                <AdminRoute>
+                <ProtectedRoute>
                   <InteractiveMapPage />
-                </AdminRoute>
+                </ProtectedRoute>
               }/>
               
             <Route path='/article/:id' 
@@ -168,7 +184,10 @@ function App() {
               }
               />
 
-            <Route path='*' element={<Navigate to='/' replace />}/>
+            <Route path='*'
+            element={
+              <ComingSoonPage />
+            }/>
         </Routes>
       </div>
     </>

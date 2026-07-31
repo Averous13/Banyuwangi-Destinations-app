@@ -9,7 +9,9 @@ import { createColumns } from "../../components/ColumnsDestination";
 import destinationApi from "../../api/destination";
 import FilterBar from "@/components/FilterBar";
 import Sidebar from "@/components/main/Sidebar";
-import { GROUP_MENU } from "@/navigation/sidebarMenu";
+import { GROUP_MENU } from "@/navigation/adminMenu";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 // import { createColumn } from "@tanstack/react-table";
 
@@ -22,6 +24,7 @@ const DestinationPanelPage = () => {
         categories: [],
         tags: []
     });
+    const navigate = useNavigate()
 
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -123,7 +126,12 @@ const DestinationPanelPage = () => {
 
 			<main className="flex-1 flex justify-center p-6">
 				<div className="w-full max-w-7xl">
-					<Title2 title="Destination Panel" spaceY="" />
+					<Title2 title="Destination Panel" spaceY="" >
+                        <Button 
+                            onClick={() => {navigate('/data-destinations/create')}}>
+                            Create
+                        </Button>
+                    </Title2>
 
 					<div className="mt-6 rounded-xl border bg-background shadow-lg p-6">
 						<DataTable

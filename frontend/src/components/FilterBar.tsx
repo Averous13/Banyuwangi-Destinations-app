@@ -51,7 +51,7 @@ function FilterBar<T extends Record<string, string>>({
           value={filters[item.key] || "__all__"}
           onValueChange={(v) => setFilter(item.key, v === "__all__" ? "" : v)}
         >
-          <SelectTrigger className={`${item.width ?? "w-[150px]"} h-9 border-primary`}>
+          <SelectTrigger className={`${item.width ?? "w-[150px]"} h-9 bg-primary text-white`}>
             <SelectValue placeholder={item.placeholder} />
           </SelectTrigger>
           <SelectContent>

@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { createColumns } from "../../components/ColumnsDestination";
 import destinationApi from "../../api/destination";
 import FilterBar from "@/components/FilterBar";
+import Sidebar from "@/components/main/Sidebar";
+import { GROUP_MENU } from "@/navigation/sidebarMenu";
 
 // import { createColumn } from "@tanstack/react-table";
 
@@ -116,29 +118,34 @@ const DestinationPanelPage = () => {
 
     return (
         <>
-            <Header />
-            <div className="w-full flex justify-center">
-                <div className="w-full max-w-7xl px-6 py-5 rounded-lg">
-                    <Title2 title="Destination Panel" spaceY="pt-26" />
-                    <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 md:p-6">
-                        <DataTable 
-                        columns={columns} 
-                        data={destination}
-                        toolbar={toolbar}
-                        pagination={{ 
-                            pageIndex,
-                            pageSize,
-                            pageCount: meta.pageCount,
-                            totalRows: meta.total,
-                            onPageChange: setPageIndex,
-                            onPageSizeChange: (size) => {
-                                setPageSize(size),
-                                setPageIndex(0)
-                            }
-                        }}/>
-                    </div>
-                 </div>
-            </div>
+		<div className="flex min-h-screen bg-muted/30">
+			<Sidebar groupMenu={GROUP_MENU} />
+
+			<main className="flex-1 flex justify-center p-6">
+				<div className="w-full max-w-7xl">
+					<Title2 title="Destination Panel" spaceY="" />
+
+					<div className="mt-6 rounded-xl border bg-background shadow-lg p-6">
+						<DataTable
+							columns={columns}
+							data={destination}
+							toolbar={toolbar}
+							pagination={{
+								pageIndex,
+								pageSize,
+								pageCount: meta.pageCount,
+								totalRows: meta.total,
+								onPageChange: setPageIndex,
+								onPageSizeChange: (size) => {
+									setPageSize(size);
+									setPageIndex(0);
+								},
+							}}
+						/>
+					</div>
+				</div>
+			</main>
+		</div>
         </>
 
     )

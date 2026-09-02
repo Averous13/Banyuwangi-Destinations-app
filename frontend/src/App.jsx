@@ -12,15 +12,6 @@ import ProtectedRoute from './components/route/ProtectedRoute'
 import PublicRoute from './components/route/PublicRoute'
 import AdminRoute from './components/route/AdminRoute'
 import { AuthContext } from './contexts/authContext'
-import './App.css'
-import './Prose.css'
-
-import '@fontsource/bebas-neue/400.css'
-import '@fontsource/sora/300.css'
-import '@fontsource/sora/400.css'
-import '@fontsource/sora/500.css'
-import '@fontsource/sora/600.css'
-import '@fontsource/sora/700.css'
 import DestinationFormPage from './pages/Destination/DestinationFormPage'
 import DestinationPage from './pages/Destination/DestinationPage'
 import ArticlePage from './pages/Article/ArticlePage'
@@ -35,17 +26,22 @@ import { Sidebar } from 'lucide-react'
 import AdminPage from './pages/Dashboard/AdminPage'
 import ComingSoonPage from './pages/ComingSoonPage'
 
+import './App.css'
+import './Prose.css'
+import '@fontsource/bebas-neue/400.css'
+import '@fontsource/sora/300.css'
+import '@fontsource/sora/400.css'
+import '@fontsource/sora/500.css'
+import '@fontsource/sora/600.css'
+import '@fontsource/sora/700.css'
+import Loading from './components/main/Loading'
+
 function App() {
   const { user, loading, isAdmin } = useContext(AuthContext);
 
     if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-sora">Loading...</p>
-        </div>
-      </div>
+      <Loading />
     );
   }
 

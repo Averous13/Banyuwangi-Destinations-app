@@ -116,7 +116,6 @@ function App() {
               </AdminRoute>
             }/>
 
-
           <Route path='/data-destinations/create'
             element={
               <AdminRoute>
@@ -137,7 +136,6 @@ function App() {
                 <DestinationUpdatePage />
               </AdminRoute>
             }/>  
-
 
             <Route path='/data-article'
               element={

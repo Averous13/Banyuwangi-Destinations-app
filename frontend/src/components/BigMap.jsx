@@ -80,7 +80,7 @@ const BigMap = ({destinations, selectedId, onSelect}) => {
         >
             <TileLayer 
             attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"/>
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_2rl6_1_49536fc94a08555fc8489135"/>
 
             {selected && (
                 <FlyToMarker position={[selected.location.lat, selected.location.long]} />

@@ -12,26 +12,24 @@ import { GROUP_MENU } from "@/navigation/adminMenu";
 import Sidebar from "@/components/main/Sidebar";
 
 import { toast } from "sonner";
+import { useFetchData } from "@/hook/useFetchData";
 
 
 const ArticlePanelPage = () => {
-  const [articles, setArticles] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [meta, setMeta] = useState({ total: 0, pageCount: 0 });
+  const navigate = useNavigate()
   const [options, setOptions] = useState({
     categories: [],
     authors: [],
     statuses: [],
     relateds: []
   })
-  const navigate = useNavigate()
 
-  // State pagination & filter dikelola di page, bukan di DataTable
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
   const [filters, setFilters] = useState({
     category: "", author: "", status: "", related: ""
   });
+  // State pagination & filter dikelola di page, bukan di DataTable
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const filterConfig = [
   {
@@ -62,40 +60,40 @@ const ArticlePanelPage = () => {
   },
 ]
 
+  const {
+    data: articles,
+    setData: setArticles,
+    meta,
+    setMeta,
+    loading,
+    isRateLimit,
+  } = useFetchData(articleApi, {
+    endpoint: '/',
+    dataKey: 'articles',
+    pageIndex,
+    pageSize,
+    filters,
+    errorMessage: "Failed to fetch Article, Please try again later",
+  })
+
   const handleDeleteSuccess = (deletedId) => {
-    setArticles(prev => prev.filter(item => item._id !== deletedId));
-  }
+    setArticles((prev) => prev.filter((item) => item._id !== deletedId));
+
+    setMeta((prev) => {
+        const newTotal = prev.total - 1;
+        const newPageCount = Math.ceil(newTotal / pageSize);
+
+        if (pageIndex >= newPageCount && pageIndex > 0) {
+            setPageIndex(newPageCount - 1);
+        }
+
+        return { total: newTotal, pageCount: newPageCount };
+    });
+  };
   const columns = useMemo(() => createColumns(handleDeleteSuccess), []);
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      setIsLoading(true);
-      try {
-        const response = await articleApi.get("/", {
-          params: {
-            page: pageIndex + 1,
-            limit: pageSize,
-            ...filters,
-          }
-        });
-        setArticles(response.data.articles);
-        setMeta({
-          total: response.data.total,
-          pageCount: Math.ceil(response.data.total / pageSize),
-        });
-      } catch (error) {
-        toast.error("Failed to fetch articles:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchArticles();
-  }, [pageIndex, pageSize, filters]); // re-fetch saat berubah
-
-  useEffect(() => {
     const fetchOption = async () => {
-        setIsLoading(true);
         try {
             const response = await articleApi.get("/opt");
             const data = response.data
@@ -108,8 +106,6 @@ const ArticlePanelPage = () => {
         } catch (error) {
             console.error('Error fetching filter:', error)
             toast.error('Filter option error')
-        } finally {
-            setIsLoading(false)
         }
     }
 

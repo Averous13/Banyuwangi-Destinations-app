@@ -12,6 +12,7 @@ import DestinationTab from "@/components/DestinationTab";
 import HtmlContent from "@/components/editor/HtmlDisplay";
 import Carousel from "@/components/Caroussel";
 import Footer from "@/components/main/Footer";
+import Loading from "@/components/main/Loading";
 
 
 const DestinationDetailPage = () => {
@@ -21,7 +22,6 @@ const DestinationDetailPage = () => {
     const [isRateLimit, setIsRateLimit] = useState(false);
     const {id} = useParams()
     const navigate = useNavigate()
-
 
     useEffect(() => {
         const fetchDestination = async () => {
@@ -47,11 +47,7 @@ const DestinationDetailPage = () => {
     }, []);
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Loading />
     }
 
     return (

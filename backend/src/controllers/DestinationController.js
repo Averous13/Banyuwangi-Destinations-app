@@ -92,7 +92,8 @@ class DestinationController{
                 Destination.find(query)
                     .skip(skip)
                     .limit(pageLimit)
-                    .sort({ name: 1})
+                    .sort({ name: 1}),
+                Destination.countDocuments(query)
             ]);
 
             res.status(200).json({

@@ -1,18 +1,5 @@
 import mongoose from "mongoose";
-
-const imageSchema = new mongoose.Schema(
-    {
-        url: {
-            type: String,
-            required: true,
-        },
-        public_id: {
-            type: String,
-            required:true
-        },
-    },
-    { _id: false}
-);
+import ImageSchema from "./Image.js";
 
 const articleSchema =  new mongoose.Schema(
     {
@@ -29,7 +16,7 @@ const articleSchema =  new mongoose.Schema(
             type: String,
         },
         hero: {
-            type: imageSchema,
+            type: ImageSchema,
         },
         author: {
             type: String,

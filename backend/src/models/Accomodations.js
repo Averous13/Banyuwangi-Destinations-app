@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import ImageSchema from "./Image.js";
 
 const CoordinatesSchema = new mongoose.Schema(
   {
@@ -15,36 +16,8 @@ const CoordinatesSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const LocationSchema = new mongoose.Schema({
-    address: { type: String, required: true},
-    village: { type: String, required: true},
-    district: { type: String, required: true},
-    coordinates: { type: CoordinatesSchema, required: true},
-},  { _id: false})
-
-const ImageSchema = new mongoose.Schema(
-    {
-        url: {
-            type: String,
-            required: true,
-        },
-        public_id: {
-            type: String,
-            required:true
-        },
-    },
-    { _id: false}
-);
-
-const PriceSchema = new mongoose.Schema({
-    min: {type: Number, required: true, min: 0},
-    max: {type: Number, required: true, min: 0},
-    currency: { type: String, default: "IDR"}
-}, 
-{_id: false})
-
 const RoomTypeSchema = new mongoose.Schema({
-    name: {type: String, required: true}, 
+    name: {type: String}, 
     price: {type: Number, required: true},
     capacity: {type: Number, required: true},
     quantity: {type: String, required: true},
@@ -53,8 +26,22 @@ const RoomTypeSchema = new mongoose.Schema({
         enum: ["Single", "Twin", "Queen", "King", "Double", "Dorm"],
         default: "Single"
     },
-    facilities: { type: [String], required: true}
-},{_id: false})
+    facilities: { type: [String], required: true},
+},{_id: true})
+
+const LocationSchema = new mongoose.Schema({
+    address: { type: String, required: true},
+    village: { type: String, required: true},
+    district: { type: String, required: true},
+    coordinates: { type: CoordinatesSchema, required: true},
+},  { _id: false})
+
+const PriceSchema = new mongoose.Schema({
+    min: {type: Number, required: true, min: 0},
+    max: {type: Number, required: true, min: 0},
+    currency: { type: String, default: "IDR"}
+}, 
+{_id: false})
 
 const OtherSchema = new mongoose.Schema({
     label: {type: String, required: true},
@@ -71,12 +58,6 @@ const PoliciesSchema = new mongoose.Schema({
     late_check_out: {type: String},
     is_pet_allowed: {type: Boolean, required: true, default: false},
     other: { type: [OtherSchema]}
-},{_id: false})
-
-const AvailabilitySchema = new mongoose.Schema({
-    is_available: {type: Boolean, default: true},
-    last_updated: {type: Date, default: Date.now},
-    unavailable_date: [{type: Date}]
 },{_id: false})
 
 const FacilityItemSchema = new mongoose.Schema({
@@ -105,7 +86,7 @@ const AccomodationsSchema = new mongoose.Schema({
         type: LocationSchema,
         required: true
     },
-    price: {
+    priceRange: {
         type: PriceSchema,
         required: true
     },
@@ -131,11 +112,6 @@ const AccomodationsSchema = new mongoose.Schema({
         type: PoliciesSchema,
         required: true
     },
-    availability: {
-        type: AvailabilitySchema,
-        required: true
-    }
-
 })
 
 export default mongoose.model("Accomodations", AccomodationsSchema);

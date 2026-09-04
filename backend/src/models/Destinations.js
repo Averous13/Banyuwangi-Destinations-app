@@ -1,18 +1,5 @@
 import mongoose from "mongoose";
-
-const imageSchema = new mongoose.Schema(
-    {
-        url: {
-            type: String,
-            required: true,
-        },
-        public_id: {
-            type: String,
-            required:true
-        },
-    },
-    { _id: false}
-);
+import ImageSchema from "./Image.js";
 
 const sectionItemSchema = new mongoose.Schema(
     {
@@ -45,7 +32,7 @@ const destinationsSchema = new mongoose.Schema({
         required: true
     },
     image: {
-        type: imageSchema,
+        type: ImageSchema,
         required: true
     },
     location: {

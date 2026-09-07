@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import ImageSchema from "./Image.js";
 
 const CoordinatesSchema = new mongoose.Schema(
-  {
+  
+    {
     type: { type: String, enum: ["Point"], default: "Point" },
     coordinates: {
       type: [Number], // [longitude, latitude]
@@ -16,6 +17,32 @@ const CoordinatesSchema = new mongoose.Schema(
   { _id: false }
 );
 
+CoordinatesSchema.path("coordinates").validate(function (v) {
+  const [lng, lat] = v;
+  // Bounding box kasar Kabupaten Banyuwangi
+  const isWithinBanyuwangi = 
+    lng >= 113.7 && lng <= 114.5 && 
+    lat >= -8.8 && lat <= -7.9;
+  return isWithinBanyuwangi;
+}, "Koordinat harus berada dalam wilayah Banyuwangi");
+
+const LocationSchema = new mongoose.Schema({
+    address: { type: String, required: true},
+    village: { type: String, required: true},
+    district: { 
+        type: String,
+        required: true,
+        enum: [
+            "Banyuwangi", "Giri", "Glagah", "Kalipuro", "Licin",
+            "Songgon", "Rogojampi", "Kabat", "Singojuruh", "Wongsorejo",
+            "Sempu", "Genteng", "Srono", "Cluring", "Gambiran",
+            "Tegalsari", "Muncar", "Purwoharjo", "Bangorejo", "Siliragung",
+            "Pesanggaran", "Tegaldlimo", "Kalibaru", "Glenmore",
+        ]
+    },
+    coordinates: { type: CoordinatesSchema, required: true},
+},  { _id: false})
+
 const RoomTypeSchema = new mongoose.Schema({
     name: {type: String}, 
     price: {type: Number, required: true},
@@ -28,13 +55,6 @@ const RoomTypeSchema = new mongoose.Schema({
     },
     facilities: { type: [String], required: true},
 },{_id: true})
-
-const LocationSchema = new mongoose.Schema({
-    address: { type: String, required: true},
-    village: { type: String, required: true},
-    district: { type: String, required: true},
-    coordinates: { type: CoordinatesSchema, required: true},
-},  { _id: false})
 
 const PriceSchema = new mongoose.Schema({
     min: {type: Number, required: true, min: 0},
@@ -73,6 +93,9 @@ const AccomodationsSchema = new mongoose.Schema({
     slug: {
         type: String,
         required: true,
+        unique: true,
+        lowercase: true,
+        trim: true
     },
     description: {
         type: String,
@@ -92,7 +115,11 @@ const AccomodationsSchema = new mongoose.Schema({
     },
     roomType: {
         type: [RoomTypeSchema],
-        required: true
+        required: true,
+        validate: {
+            validator: (v) => v.length > 0,
+            message: "Minimal harus ada 1 tipe kamar",
+      },
     },
     facilities: {
         room: [FacilityItemSchema],
@@ -106,12 +133,24 @@ const AccomodationsSchema = new mongoose.Schema({
     },
     images: {
         type: [ImageSchema],
-        required: true
+        required: true,
+        validate: {
+            validator: (v) => v.length > 0,
+            message: "Minimal harus ada 1 gambar",
+        },
     },
     policies: {
         type: PoliciesSchema,
         required: true
     },
-})
+    isActive: { type: Boolean, default: true},
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}
+}, {timestamps: true})
+
+AccomodationsSchema.index({ slug: 1 }, { unique: true });
+AccomodationsSchema.index({ type: 1 });
+AccomodationsSchema.index({ "location.village": 1, "location.district": 1 });
+AccomodationsSchema.index({ "location.coordinates": "2dsphere" }); // untuk geo query (cari akomodasi terdekat)
+AccomodationsSchema.index({ is_active: 1 });
 
 export default mongoose.model("Accomodations", AccomodationsSchema);
